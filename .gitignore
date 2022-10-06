@@ -19,6 +19,7 @@ Data/
 *.air
 *.ipa
 *.apk
+*__pycache__/
 
 # Exceptions
 !cmapss.png
