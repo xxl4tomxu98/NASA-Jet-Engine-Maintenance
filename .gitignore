@@ -6,12 +6,13 @@ bin-release/
 
 # Data files
 N-CMAPSS/
+Data/
 *.h5
 *.npy
 *.npz
+*.txt
 
 # Other files and folders
-
 
 # Executables
 *.swf
