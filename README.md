@@ -19,7 +19,7 @@ The training set includes operational data from 100 different engines. The lengt
 
 ## Models for Predictive Maintenance
 
-- Exponential Degradation model for RUL Prediction
+- Linear, Piecewise-Linear, Exponential Degradation model for RUL Prediction
 - Similarity-based model for RUL Prediction
 - LSTM model for RUL Prediction
 - LSTM model for binary and multiclass classification
@@ -33,6 +33,7 @@ The training set includes operational data from 100 different engines. The lengt
 - Hidden Markov Models
 - Survival Analysis
 - Autoencoder
+- Mulivariant Gaussian Unsupervised Learning
 
 # N-CMAPSS_DL
 DL evaluation on N-CMAPSS
