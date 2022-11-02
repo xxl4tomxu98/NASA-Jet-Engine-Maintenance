@@ -13,7 +13,7 @@ Data sets consists of multiple multivariate time series. Each time series is fro
 
 The engine is operating normally at the start of each time series, and develops a fault at some point during the series. In the training set, the fault grows in magnitude until system failure. In the test set, the time series ends some time prior to system failure. 
 
-The training set includes operational data from 100 different engines. The lengths of the run varied with a minimum run length of 128 cycles and the maximum length of 356 cylces. The testing set includes operational data from 100 different engines. The engines in the test dataset and copletely different from engines in the training data set.
+The training set includes operational data from 100 different engines. The lengths of the run varied with a minimum run length of 128 cycles and the maximum length of 356 cylces. The testing set includes operational data from 100 different engines. The engines in the test dataset are completely different from engines in the training data set.
 
 ## EDA
 
@@ -34,6 +34,7 @@ The training set includes operational data from 100 different engines. The lengt
 - Survival Analysis
 - Autoencoder
 - Mulivariant Gaussian Unsupervised Learning
+- Bayesian Structural Time Series (BSTS)
 
 # N-CMAPSS_DL
 DL evaluation on N-CMAPSS
