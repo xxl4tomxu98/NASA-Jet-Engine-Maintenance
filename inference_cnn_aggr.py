@@ -1,8 +1,5 @@
 '''
 DL models (FNN, 1D CNN and CNN-LSTM) evaluation on N-CMAPSS
-12.07.2021
-Hyunho Mo
-hyunho.mo@unitn.it
 '''
 ## Import libraries in python
 import gc
@@ -57,18 +54,13 @@ from tensorflow.keras.layers import Conv1D
 from tensorflow.keras.layers import MaxPooling1D
 from tensorflow.keras.layers import concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
-
-
 from tensorflow.python.framework.convert_to_constants import  convert_variables_to_constants_v2_as_graph
-
 from tensorflow.keras.initializers import GlorotNormal, GlorotUniform
 
 initializer = GlorotNormal(seed=0)
 # initializer = GlorotUniform(seed=0)
-
 from utils.data_preparation_unit import df_all_creator, df_train_creator, df_test_creator, Input_Gen
 from utils.dnn import one_dcnn
-
 
 # import tensorflow.compat.v1 as tf
 # tf.disable_v2_behavior()
@@ -95,8 +87,8 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # tf.config.set_visible_devices([], 'GPU')
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-data_filedir = os.path.join(current_dir, 'N-CMAPSS')
-data_filepath = os.path.join(current_dir, 'N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
+data_filedir = os.path.join(current_dir, 'Data/N-CMAPSS')
+data_filepath = os.path.join(current_dir, 'Data/N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
 sample_dir_path = os.path.join(data_filedir, 'Samples_whole')
 
 model_temp_path = os.path.join(current_dir, 'Models', 'oned_cnn_rep.h5')
@@ -118,10 +110,10 @@ def load_part_array_merge (sample_dir_path, unit_num, win_len, win_stride, parti
     label_array_lst = []
     print ("Unit: ", unit_num)
     for part in range(partition):
-      print ("Part.", part+1)
-      sample_array, label_array = load_part_array (sample_dir_path, unit_num, win_len, win_stride, part+1)
-      sample_array_lst.append(sample_array)
-      label_array_lst.append(label_array)
+        print ("Part.", part+1)
+        sample_array, label_array = load_part_array (sample_dir_path, unit_num, win_len, win_stride, part+1)
+        sample_array_lst.append(sample_array)
+        label_array_lst.append(label_array)
     sample_array = np.dstack(sample_array_lst)
     label_array = np.concatenate(label_array_lst)
     sample_array = sample_array.transpose(2, 0, 1)
@@ -134,8 +126,8 @@ def load_array (sample_dir_path, unit_num, win_len, stride, sampling):
     filename =  'Unit%s_win%s_str%s_smp%s.npz' %(str(int(unit_num)), win_len, stride, sampling)
     filepath =  os.path.join(sample_dir_path, filename)
     loaded = np.load(filepath)
-
     return loaded['sample'].transpose(2, 0, 1), loaded['label']
+
 
 def rmse(y_true, y_pred):
     return backend.sqrt(backend.mean(backend.square(y_pred - y_true), axis=-1))
@@ -153,6 +145,7 @@ def shuffle_array(sample_array, label_array):
     shuffle_label = label_array[ind_list,]
     return shuffle_sample, shuffle_label
 
+
 def figsave(history, win_len, win_stride, bs, lr, sub):
     fig_acc = plt.figure(figsize=(15, 8))
     plt.plot(history.history['loss'])
@@ -165,7 +158,6 @@ def figsave(history, win_len, win_stride, bs, lr, sub):
     print ("saving file:training loss figure")
     fig_acc.savefig(pic_dir + "/training_w%s_s%s_bs%s_sub%s_lr%s.png" %(int(win_len), int(win_stride), int(bs), int(sub), str(lr)))
     return
-
 
 
 def get_flops(model):
@@ -181,8 +173,6 @@ def get_flops(model):
         return flops.total_float_ops
 
 
-
-
 def scheduler(epoch, lr):
     if epoch == 30:
         print("lr decay by 10")
@@ -192,7 +182,6 @@ def scheduler(epoch, lr):
         return lr * 0.1
     else:
         return lr
-
 
 
 def release_list(a):
@@ -270,7 +259,6 @@ def main():
     print("samples are shuffled")
     print("sample_array.shape", sample_array.shape)
     print("label_array.shape", label_array.shape)
-
     print ("train sample dtype", sample_array.dtype)
     print("train label dtype", label_array.dtype)
 
@@ -287,15 +275,12 @@ def main():
     # model = Model(inputs=[input_1, input_2], outputs=main_output)
 
     one_d_cnn_model = one_dcnn(n_filters, kernel_size, sample_array, initializer)
-
     print(one_d_cnn_model.summary())
     # one_d_cnn_model.compile(loss='mean_squared_error', optimizer=amsgrad, metrics=[rmse, 'mae'])
 
 
     start = time.time()
-
     lr_scheduler = LearningRateScheduler(scheduler)
-
     one_d_cnn_model.compile(loss='mean_squared_error', optimizer=amsgrad, metrics='mae')
     history = one_d_cnn_model.fit(sample_array, label_array, epochs=ep, batch_size=bs, validation_split=vs, verbose=2,
                       callbacks = [EarlyStopping(monitor='val_loss', min_delta=0, patience=pt, verbose=1, mode='min'),
@@ -304,7 +289,6 @@ def main():
     # TqdmCallback(verbose=2)
     # one_d_cnn_model.save(tf_temp_path,save_format='tf')
     figsave(history, win_len, win_stride, bs, lr, sub)
-
     print("The FLOPs is:{}".format(get_flops(one_d_cnn_model)), flush=True)
     num_train = sample_array.shape[0]
     end = time.time()
@@ -314,7 +298,6 @@ def main():
 
     ### Test (inference after training)
     start = time.time()
-
     output_lst = []
     truth_lst = []
 
@@ -328,19 +311,15 @@ def main():
         label_array = label_array[::sub]
         print("sub sample_array.shape", sample_array.shape)
         print("sub label_array.shape", label_array.shape)
-
         estimator = load_model(model_temp_path)
-
         y_pred_test = estimator.predict(sample_array)
         output_lst.append(y_pred_test)
         truth_lst.append(label_array)
 
     print(output_lst[0].shape)
     print(truth_lst[0].shape)
-
     print(np.concatenate(output_lst).shape)
     print(np.concatenate(truth_lst).shape)
-
     output_array = np.concatenate(output_lst)[:, 0]
     trytg_array = np.concatenate(truth_lst)
     print(output_array.shape)
@@ -369,7 +348,6 @@ def main():
         fig_verify.savefig(pic_dir + "/unit%s_test_w%s_s%s_bs%s_lr%s_sub%s_rmse-%s.png" %(str(int(units_index_test[idx])),
                                                                               int(win_len), int(win_stride), int(bs),
                                                                                     str(lr), int(sub), str(rms)))
-
     print("The FLOPs is:{}".format(get_flops(one_d_cnn_model)), flush=True)
     print("wind length_%s,  win stride_%s" %(str(win_len), str(win_stride)))
     print("# Training samples: ", num_train)

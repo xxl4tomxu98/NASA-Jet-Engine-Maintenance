@@ -1,8 +1,5 @@
 '''
 DL models (FNN, 1D CNN and CNN-LSTM) evaluation on N-CMAPSS
-12.07.2021
-Hyunho Mo
-hyunho.mo@unitn.it
 '''
 ## Import libraries in python
 import gc
@@ -64,10 +61,8 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 tf.get_logger().setLevel(logging.ERROR)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-data_filedir = os.path.join(current_dir, 'N-CMAPSS')
-data_filepath = os.path.join(current_dir, 'N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
-
-
+data_filedir = os.path.join(current_dir, 'Data/N-CMAPSS')
+data_filepath = os.path.join(current_dir, 'Data/N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
 
 
 def main():
@@ -76,15 +71,10 @@ def main():
     parser.add_argument('-w', type=int, default=10, help='Input sources', required=True)
     parser.add_argument('-s', type=int, default=10, help='sequence length')
     parser.add_argument('--index', type=int, default='non', help='data representation:non, sfa or pca')
-
-
     args = parser.parse_args()
-
     sequence_length = args.w
     stride = args.s
     unit_index = args.index
-
-
 
     # Load data
     '''
@@ -97,17 +87,14 @@ def main():
     '''
 
     df_all = df_all_creator(data_filepath)
-
     '''
     Split dataframe into Train and Test
     Training units: 2, 5, 10, 16, 18, 20
     Test units: 11, 14, 15
-
     '''
     # units = list(np.unique(df_A['unit']))
     units_index_train = [2.0, 5.0, 10.0, 16.0, 18.0, 20.0]
     units_index_test = [11.0, 14.0, 15.0]
-
     print("units_index_train", units_index_train)
     print("units_index_test", units_index_test)
 
@@ -124,8 +111,6 @@ def main():
     #     print(df_test.columns)
     #     print("num of inputs: ", len(df_test.columns))
     #     df_train = pd.DataFrame()
-
-
     df_train = df_train_creator(df_all, units_index_train)
     print(df_train)
     print(df_train.columns)
@@ -134,15 +119,12 @@ def main():
     print(df_test)
     print(df_test.columns)
     print("num of inputs: ", len(df_test.columns))
-
     del df_all
     gc.collect()
     df_all = pd.DataFrame()
     sample_dir_path = os.path.join(data_filedir, 'Samples_whole')
-
     cols_normalize = df_train.columns.difference(['RUL', 'unit'])
     sequence_cols = df_train.columns.difference(['RUL', 'unit'])
-
     data_class = Input_Gen (df_train, df_test, cols_normalize, sequence_length, sequence_cols, sample_dir_path,
                             unit_index, stride =stride)
     data_class.seq_gen()
