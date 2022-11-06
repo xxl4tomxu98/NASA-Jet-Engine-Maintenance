@@ -98,7 +98,6 @@ def main():
     #     print(df_train.columns)
     #     print("num of inputs: ", len(df_train.columns) )
     #     df_test = pd.DataFrame()
-    #
     # else :
     #     df_test = df_test_creator(df_all, units_index_test)
     #     print(df_test)
@@ -113,17 +112,14 @@ def main():
     print(df_test)
     print(df_test.columns)
     print("num of inputs: ", len(df_test.columns))
-
     del df_all
     gc.collect()
     df_all = pd.DataFrame()
     sample_dir_path = os.path.join(data_filedir, 'Samples')
-
     cols_normalize = df_train.columns.difference(['RUL', 'unit'])
     sequence_cols = df_train.columns.difference(['RUL', 'unit'])
-
-    data_class = Input_Gen (df_train, df_test, cols_normalize, sequence_length, sequence_cols, sample_dir_path,
-                            unit_index, stride =stride)
+    data_class = Input_Gen (df_train, df_test, cols_normalize, sequence_length, 
+                            sequence_cols, sample_dir_path, unit_index, stride =stride)
     data_class.seq_gen()
 
 

@@ -82,20 +82,14 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 # tf.get_logger().setLevel(logging.ERROR)
 
-
-
 # tf.config.set_visible_devices([], 'GPU')
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_filedir = os.path.join(current_dir, 'Data/N-CMAPSS')
 data_filepath = os.path.join(current_dir, 'Data/N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
 sample_dir_path = os.path.join(data_filedir, 'Samples_whole')
-
 model_temp_path = os.path.join(current_dir, 'Models', 'oned_cnn_rep.h5')
 tf_temp_path = os.path.join(current_dir, 'TF_Model_tf')
-
 pic_dir = os.path.join(current_dir, 'Figures')
-
 '''
 load array from npz files
 '''
@@ -104,6 +98,7 @@ def load_part_array (sample_dir_path, unit_num, win_len, stride, part_num):
     filepath =  os.path.join(sample_dir_path, filename)
     loaded = np.load(filepath)
     return loaded['sample'], loaded['label']
+
 
 def load_part_array_merge (sample_dir_path, unit_num, win_len, win_stride, partition):
     sample_array_lst = []
@@ -208,8 +203,6 @@ def main():
     parser.add_argument('-sub', type=int, default=10, help='subsampling stride')
     parser.add_argument('--sampling', type=int, default=1, help='sub sampling of the given data. If it is 10, then this indicates that we assumes 0.1Hz of data collection')
 
-
-
     args = parser.parse_args()
 
     win_len = args.w
@@ -225,13 +218,12 @@ def main():
     sub = args.sub
     sampling = args.sampling
 
-    amsgrad = optimizers.Adam(learning_rate=lr, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=True, name='Adam')
-    rmsop = optimizers.RMSprop(learning_rate=lr, rho=0.9, momentum=0.0, epsilon=1e-07, centered=False,
-                               name='RMSprop')
-
+    amsgrad = optimizers.Adam(learning_rate=lr, beta_1=0.9, beta_2=0.999,
+                              epsilon=1e-07, amsgrad=True, name='Adam')
+    rmsop = optimizers.RMSprop(learning_rate=lr, rho=0.9, momentum=0.0, 
+                               epsilon=1e-07, centered=False, name='RMSprop')
     train_units_samples_lst =[]
     train_units_labels_lst = []
-
     for index in units_index_train:
         print("Load data index: ", index)
         sample_array, label_array = load_array (sample_dir_path, index, win_len, win_stride, sampling)
@@ -254,15 +246,12 @@ def main():
     train_units_samples_lst =[]
     train_units_labels_lst = []
     print("Memory released")
-
     #sample_array, label_array = shuffle_array(sample_array, label_array)
     print("samples are shuffled")
     print("sample_array.shape", sample_array.shape)
     print("label_array.shape", label_array.shape)
     print ("train sample dtype", sample_array.dtype)
     print("train label dtype", label_array.dtype)
-
-
     # input_temp = Input(shape=(sample_array.shape[1], sample_array.shape[2]),name='kernel_size%s' %str(int(kernel_size)))
     # #------
     # one_d_cnn = one_dcnn(n_filters, kernel_size, sample_array, initializer)
@@ -283,8 +272,8 @@ def main():
     lr_scheduler = LearningRateScheduler(scheduler)
     one_d_cnn_model.compile(loss='mean_squared_error', optimizer=amsgrad, metrics='mae')
     history = one_d_cnn_model.fit(sample_array, label_array, epochs=ep, batch_size=bs, validation_split=vs, verbose=2,
-                      callbacks = [EarlyStopping(monitor='val_loss', min_delta=0, patience=pt, verbose=1, mode='min'),
-                                    ModelCheckpoint(model_temp_path, monitor='val_loss', save_best_only=True, mode='min', verbose=1)]
+                                  callbacks=[EarlyStopping(monitor='val_loss', min_delta=0, patience=pt, verbose=1, mode='min'),
+                                  ModelCheckpoint(model_temp_path, monitor='val_loss', save_best_only=True, mode='min', verbose=1)]
                       )
     # TqdmCallback(verbose=2)
     # one_d_cnn_model.save(tf_temp_path,save_format='tf')

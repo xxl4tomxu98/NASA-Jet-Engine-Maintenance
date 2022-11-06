@@ -77,7 +77,6 @@ def main():
     #     print(df_train.columns)
     #     print("num of inputs: ", len(df_train.columns) )
     #     df_test = pd.DataFrame()
-    #
     # else :
     #     df_test = df_test_creator(df_all, units_index_test)
     #     print(df_test)
@@ -92,7 +91,6 @@ def main():
     print(df_test)
     print(df_test.columns)
     print("num of inputs: ", len(df_test.columns))
-
     del df_all
     gc.collect()
     df_all = pd.DataFrame()
@@ -105,13 +103,13 @@ def main():
     sequence_cols = df_train.columns.difference(['RUL', 'unit'])
     if selector == 0:
         for unit_index in units_index_train:
-            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols, sample_dir_path,
-                                   unit_index, sampling, stride =stride)
+            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols,
+                                   sample_dir_path, unit_index, sampling, stride =stride)
             data_class.seq_gen()
     else:
         for unit_index in units_index_test:
-            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols, sample_dir_path,
-                                   unit_index, sampling, stride =stride)
+            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols,
+                                   sample_dir_path, unit_index, sampling, stride =stride)
             data_class.seq_gen()
 
 
