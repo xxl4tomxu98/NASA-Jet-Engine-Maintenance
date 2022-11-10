@@ -26,6 +26,12 @@ The training set includes operational data from 100 different engines. The lengt
 - RNN model for binary and multiclass classification
 - 1D CNN for binary and multiclass classification
 - 1D CNN-SVM for binary classification
+- Logistic regression classification
+- K nearest neighbors classification
+- Support vector machines (linear and RBF kernels)
+- Naive Bayes classification
+- Decision trees classification
+- Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers 
 - Autokeras failure prediction
 - Tsfresh 
 - DTW and Time series clustering
