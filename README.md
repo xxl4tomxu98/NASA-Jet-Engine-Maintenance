@@ -19,19 +19,21 @@ The training set includes operational data from 100 different engines. The lengt
 
 ## Models for Predictive Maintenance
 
-- Linear, Piecewise-Linear, Exponential Degradation model for RUL Prediction
+- Linear, Piecewise-Linear, Exponential Degradation, and ARIMA model for RUL Prediction
+- Pattern similarity based forecasting
 - Similarity-based model for RUL Prediction
 - LSTM model for RUL Prediction
 - LSTM model for binary and multiclass classification
 - RNN model for binary and multiclass classification
 - 1D CNN for binary and multiclass classification
 - 1D CNN-SVM for binary classification
+- Attension in GRU
 - Logistic regression classification
 - K nearest neighbors classification
-- Support vector machines (linear and RBF kernels)
+- Support vector machines (linear and RBF kernels) classifiers and regressors
 - Naive Bayes classification
 - Decision trees classification
-- Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers 
+- Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers and regressors
 - Autokeras failure prediction
 - Tsfresh 
 - DTW and Time series clustering
