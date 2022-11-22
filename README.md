@@ -13,7 +13,9 @@ Data sets consists of multiple multivariate time series. Each time series is fro
 
 The engine is operating normally at the start of each time series, and develops a fault at some point during the series. In the training set, the fault grows in magnitude until system failure. In the test set, the time series ends some time prior to system failure. 
 
-The training set includes operational data from 100 different engines. The lengths of the run varied with a minimum run length of 128 cycles and the maximum length of 356 cylces. The testing set includes operational data from 100 different engines. The engines in the test dataset are completely different from engines in the training data set.
+Imbalanced class distribution is a common issue in many classification tasks. It is not unusual that the training data contains highly imbalanced positive/negative examples which however reflects the true class distribution in a general population. In predictive maintenance applications, this issue exists: the imbalance of failure events to normal operation events. This issue is due to following two major reasons. First, the failure events usually rarely occurs compared to normal operation state for an in-service asset. Second, there are too few failure events. The business cannot afford to let the asset run-to-failure, as it is at the cost of equipment damage and equipment down time.
+
+The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-sampling technique" [[5]](#5). It is used to increase the size of the minority examples in a data set by synthesizing new examples with minority class. SMOTE module has two parameters: "SMOTE percentage" and "Number of nearest neighbors". The parameter "SMOTE percentage" should be in multiples of hundreds (100,200,300,400,…). This is fraction of new minority examples that gets added. For examples, we double our minority class by setting the value to 100, we triple the size of minority class by setting the value to 200, etc. The parameter "Number of nearest neighbors" is used to generate new examples from minority class. Each generated example is an average of the original example and its nearest neighbors from the same class.
 
 ## EDA
 
@@ -113,4 +115,7 @@ Chao, Manuel Arias, Chetan Kulkarni, Kai Goebel, and Olga Fink. "Fusing physics-
 Mo, Hyunho, and Giovanni Iacca. "Multi-Objective Optimization of Extreme Learning Machine for Remaining Useful Life Prediction." EvoApplications, part of EvoStar 2022 (2022), to appear.
 
 https://www.mathworks.com/help/predmaint/ug/rul-estimation-using-rul-estimator-models.html
+
+<a id="5">[5]</a>
+N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer (2002). SMOTE: synthetic minority over-sampling technique. Journal of artificial intelligence research, 16(1), 321-357.
 
