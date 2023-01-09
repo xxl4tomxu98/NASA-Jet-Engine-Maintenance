@@ -28,6 +28,9 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - LSTM model for binary and multiclass classification
 - RNN model for binary and multiclass classification
 - 1D CNN for binary and multiclass classification
+- 1D CNN-RNN for binary and multiclass classification
+- 1D CNN-GRU for binary and multiclass classification
+- 1D CNN-LSTM for binary and multiclass classification
 - 1D CNN-SVM for binary classification
 - Attension in GRU
 - Logistic regression classification
