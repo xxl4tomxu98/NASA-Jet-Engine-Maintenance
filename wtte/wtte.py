@@ -7,8 +7,8 @@ from math import log
 import warnings
 import numpy as np
 
-from keras import backend as K
-from keras.callbacks import Callback
+from tensorflow.keras import backend as K
+from tensorflow.keras.callbacks import Callback
 
 
 def _keras_unstack_hack(ab):
@@ -31,9 +31,7 @@ def _keras_unstack_hack(ab):
 def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
                   alpha_kernel_scalefactor=None):
     """Elementwise (Lambda) computation of alpha and regularized beta.
-
         - Alpha:
-
             (activation)
             Exponential units seems to give faster training than
             the original papers softplus units. Makes sense due to logarithmic
@@ -45,24 +43,18 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
             Because we're lazy we want the correct scale of output built
             into the model so initialize implicitly;
             multiply assumed exp(0)=1 by scale factor `init_alpha`.
-
         - Beta:
-
             (activation)
             We want slow changes when beta-> 0 so Softplus made sense in the original
             paper but we get similar effect with sigmoid. It also has nice features.
             (regularization) Use max_beta_value to implicitly regularize the model
             (initialization) Fixed to begin moving slowly around 1.0
-
         - Usage
             .. code-block:: python
-
                 model.add(TimeDistributed(Dense(2)))
                 model.add(Lambda(wtte.output_lambda, arguments={"init_alpha":init_alpha, 
                                                         "max_beta_value":2.0
                                                        }))
-
-
         :param x: tensor with last dimension having length 2 with x[...,0] = alpha, x[...,1] = beta
         :param init_alpha: initial value of `alpha`. Default value is 1.0.
         :param max_beta_value: maximum beta value. Default value is 5.0.
@@ -73,7 +65,6 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
         :type max_alpha_value: Float
         :return x: A positive `Tensor` of same shape as input
         :rtype: Array
-
     """
     if max_beta_value is None or max_beta_value > 3:
         if K.epsilon() > 1e-07 and K.backend() == 'tensorflow':
@@ -97,37 +88,27 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
 
     # Implicitly initialize alpha:
     a = init_alpha * K.exp(a)
-
     if max_beta_value > 1.05:  # some value >>1.0
         # shift to start around 1.0
         # assuming input is around 0.0
         _shift = np.log(max_beta_value - 1.0)
-
         b = b - _shift
-
     b = max_beta_value * K.sigmoid(b)
-
     x = K.stack([a, b], axis=-1)
-
     return x
 
 
 class OuputActivation(object):
     """ Elementwise computation of alpha and regularized beta.
-
-
         Wrapper to `output_lambda` using keras.layers.Activation. 
         See this for details.
-
         - Usage
             .. code-block:: python
 
                wtte_activation = wtte.OuputActivation(init_alpha=1.,
                                                  max_beta_value=4.0).activation
-
                model.add(Dense(2))
                model.add(Activation(wtte_activation))
-
     """
 
     def __init__(self, init_alpha=1.0, max_beta_value=5.0):
@@ -136,7 +117,6 @@ class OuputActivation(object):
 
     def activation(self, ab):
         """ (Internal function) Activation wrapper
-
         :param ab: original tensor with alpha and beta.
         :return ab: return of `output_lambda` with `init_alpha` and `max_beta_value`.
         """
@@ -189,24 +169,18 @@ def loglik_continuous_conditional_correction(y, u, a, b, epsilon=K.epsilon()):
 class Loss(object):
     """ Creates a keras WTTE-loss function.
         - Usage
-
             :Example:
-
             .. code-block:: python
                loss = wtte.Loss(kind='discrete').loss_function
                model.compile(loss=loss, optimizer=RMSprop(lr=0.01))
-
                # And with masking:
                loss = wtte.Loss(kind='discrete',reduce_loss=False).loss_function
                model.compile(loss=loss, optimizer=RMSprop(lr=0.01),
                               sample_weight_mode='temporal')
-
         .. note::
-
             With masking keras needs to access each loss-contribution individually.
             Therefore we do not sum/reduce down to scalar (dim 1), instead return a 
             tensor (with reduce_loss=False).
-
         :param kind:  One of 'discrete' or 'continuous'
         :param reduce_loss: 
         :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]
@@ -215,7 +189,6 @@ class Loss(object):
         :param growth: Deprecated.
         :type reduce_loss: Boolean
     """
-
     def __init__(self,
                  kind,
                  reduce_loss=True,
@@ -223,11 +196,9 @@ class Loss(object):
                  regularize=False,
                  location=None,
                  growth=None):
-
         self.kind = kind
         self.reduce_loss = reduce_loss
         self.clip_prob = clip_prob
-
         if regularize == True or location is not None or growth is not None:
             raise DeprecationWarning('Directly penalizing beta has been found \
                                       to be unneccessary when using bounded activation \
@@ -235,13 +206,11 @@ class Loss(object):
                                       Use this method instead.')
 
     def loss_function(self, y_true, y_pred):
-
         y, u, a, b = _keras_split(y_true, y_pred)
         if self.kind == 'discrete':
             loglikelihoods = loglik_discrete(y, u, a, b)
         elif self.kind == 'continuous':
             loglikelihoods = loglik_continuous(y, u, a, b)
-
         if self.clip_prob is not None:
             loglikelihoods = K.clip(loglikelihoods, 
                 log(self.clip_prob), log(1 - self.clip_prob))
@@ -249,7 +218,6 @@ class Loss(object):
             loss = -1.0 * K.mean(loglikelihoods, axis=-1)
         else:
             loss = -loglikelihoods
-
         return loss
 
 # For backwards-compatibility
@@ -259,13 +227,11 @@ loss = Loss
 class WeightWatcher(Callback):
     """Keras Callback to keep an eye on output layer weights.
         (under development)
-
-        Usage:
+       Usage:
             weightwatcher = WeightWatcher(per_batch=True,per_epoch=False)
             model.fit(...,callbacks=[weightwatcher])
             weightwatcher.plot()
     """
-
     def __init__(self,
                  per_batch=False,
                  per_epoch=True
@@ -285,15 +251,11 @@ class WeightWatcher(Callback):
 
     def append_metrics(self):
         # Last two weightlayers in model
-
         output_weights, output_biases = self.model.get_weights()[-2:]
-
         a_weights_mean, b_weights_mean = output_weights.mean(0)
         a_weights_min, b_weights_min = output_weights.min(0)
         a_weights_max, b_weights_max = output_weights.max(0)
-
         a_bias, b_bias = output_biases
-
         self.a_weights_mean.append(a_weights_mean)
         self.b_weights_mean.append(b_weights_mean)
         self.a_weights_min.append(a_weights_min)
@@ -328,7 +290,6 @@ class WeightWatcher(Callback):
 
     def plot(self):
         import matplotlib.pyplot as plt
-
         # Create axes
         fig, ax1 = plt.subplots()
         ax2 = ax1.twinx()
