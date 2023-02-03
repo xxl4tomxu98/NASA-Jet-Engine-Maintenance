@@ -6,7 +6,6 @@ import numpy as np
 
 def cumulative_hazard(t, a, b):
     """ Cumulative hazard
-
     :param t: Value
     :param a: Alpha
     :param b: Beta
@@ -23,7 +22,6 @@ def hazard(t, a, b):
 
 def cdf(t, a, b):
     """ Cumulative distribution function.
-
     :param t: Value
     :param a: Alpha
     :param b: Beta
@@ -35,7 +33,6 @@ def cdf(t, a, b):
 
 def pdf(t, a, b):
     """ Probability distribution function.
-
     :param t: Value
     :param a: Alpha
     :param b: Beta
@@ -47,7 +44,6 @@ def pdf(t, a, b):
 
 def cmf(t, a, b):
     """ Cumulative Mass Function.
-
     :param t: Value
     :param a: Alpha
     :param b: Beta
@@ -59,7 +55,6 @@ def cmf(t, a, b):
 
 def pmf(t, a, b):
     """ Probability mass function.
-
     :param t: Value
     :param a: Alpha
     :param b: Beta
@@ -85,8 +80,7 @@ def mode(a, b):
 
 
 def mean(a, b):
-    """ Continuous mean. at most 1 step below discretized mean 
-
+    """ Continuous mean. at most 1 step below discretized mean
     `E[T ] <= E[Td] + 1` true for positive distributions.
     """
     from scipy.special import gamma
@@ -95,7 +89,6 @@ def mean(a, b):
 
 def quantiles(a, b, p):
     """ Quantiles
-
     :param a: Alpha
     :param b: Beta
     :param p:
@@ -106,9 +99,7 @@ def quantiles(a, b, p):
 
 def mean(a, b):
     """Continuous mean. Theoretically at most 1 step below discretized mean
-
     `E[T ] <= E[Td] + 1` true for positive distributions.
-
     :param a: Alpha
     :param b: Beta
     :return: `a * gamma(1.0 + 1.0 / b)`
@@ -119,7 +110,6 @@ def mean(a, b):
 
 def continuous_loglik(t, a, b, u=1, equality=False):
     """Continous censored loglikelihood function.
-
     :param bool equality: In ML we usually only care about the likelihood
     with *proportionality*, removing terms not dependent on the parameters.
     If this is set to `True` we keep those terms.
@@ -131,13 +121,11 @@ def continuous_loglik(t, a, b, u=1, equality=False):
         # commonly optimized over: proportional terms w.r.t alpha,beta
         loglik = u * loglik(hazard(t, a, b)) - \
             loglik(cumulative_hazard(t, a, b))
-
     return loglik
 
 
 def discrete_loglik(t, a, b, u=1, equality=False):
     """Discrete censored loglikelihood function.
-
     :param bool equality: In ML we usually only care about the likelihood
     with *proportionality*, removing terms not dependent on the parameters.
     If this is set to `True` we keep those terms.
@@ -151,21 +139,15 @@ def discrete_loglik(t, a, b, u=1, equality=False):
         hazard0 = cumulative_hazard(t, a, b)
         hazard1 = cumulative_hazard(t + 1., a, b)
         loglik = u * np.log(np.exp(hazard1 - hazard0) - 1.0) - hazard1
-
     return loglik
-
-# Conditional excess
 
 
 class conditional_excess():
     """ Experimental class for conditional excess distribution.
-
         The idea is to query `s` into the future after time `t`
         has passed without event. Se thesis for details.
-
         note: Note tested and may be incorrect!
     """
-
     def pdf(t, s, a, b):
         t = np.double(t)
         return hazard(t + s, a, b) * np.exp(-cumulative_hazard(t + s, a, b) + cumulative_hazard(t, a, b))
@@ -181,12 +163,9 @@ class conditional_excess():
         #    cequantile(t, a, 1., p)==cequantile(0., a, 1., p)
         # conditional excess quantile
         # t+s : Pr(Y<t+s|y>t)=p
-
         print('not tested')
         L = np.power((t + .0) / a, b)
-
         quantile = a * np.power(-np.log(1. - p) - L, 1. / b)
-
         return quantile
 
     def mean(t, a, b):
@@ -202,10 +181,8 @@ class conditional_excess():
         from scipy.special import gammainc
         # Regularized lower gamma
         print('not tested')
-
         v = 1. + 1. / b
         gv = gamma(v)
         L = np.power((t + .0) / a, b)
         cemean = a * gv * np.exp(L) * (1 - gammainc(v, t / a) / gv)
-
         return cemean

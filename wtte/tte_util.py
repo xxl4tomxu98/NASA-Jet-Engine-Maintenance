@@ -12,15 +12,12 @@ from six.moves import xrange
 #   to ensure that it's either inverse TTE or a feature or if they coincide.
 
 def roll_fun(x, size, fun=np.mean, reverse=False):
-    """Like cumsum but with any function `fun`. 
-    """
+    """Like cumsum but with any function `fun`. """
     y = np.copy(x)
     n = len(x)
     size = min(size, n)
-
     if size <= 1:
         return x
-
     for i in xrange(size):
         y[i] = fun(x[0:(i + 1)])
     for i in xrange(size, n):
@@ -31,7 +28,6 @@ def roll_fun(x, size, fun=np.mean, reverse=False):
 def carry_forward_if(x, is_true):
     """Locomote forward `x[i]` if `is_true[i]`.
         remain x untouched before first pos of truth.
-
         :param Array x: object whos elements are to carry forward
         :param Array is_true: same length as x containing true/false boolean.
         :return Array x: forwarded object
@@ -47,7 +43,6 @@ def carry_forward_if(x, is_true):
 def carry_backward_if(x, is_true):
     """Locomote backward `x[i]` if `is_true[i]`.
         remain x untouched after last pos of truth.
-
         :param Array x: object whos elements are to carry backward
         :param Array is_true: same length as x containing true/false boolean.
         :return Array x: backwarded object
@@ -62,7 +57,6 @@ def carry_backward_if(x, is_true):
 
 def steps_since_true_minimal(is_event):
     """(Time) since event over discrete (padded) event vector.
-
         :param Array is_event: a vector of 0/1s or boolean
         :return Array x: steps since is_event was true
     """
@@ -78,7 +72,6 @@ def steps_since_true_minimal(is_event):
 
 def steps_to_true_minimal(is_event):
     """(Time) to event for discrete (padded) event vector.
-
         :param Array is_event: a vector of 0/1s or boolean
         :return Array x: steps until is_event is true
     """
@@ -94,12 +87,10 @@ def steps_to_true_minimal(is_event):
 
 def get_tte_discrete(is_event, t_elapsed=None):
     """Calculates discretely measured tte over a vector.
-
         :param Array is_event: Boolean array
-        :param IntArray t_elapsed: integer array with same length as `is_event`. If none, it will use `xrange(len(is_event))`
+        :param IntArray t_elapsed: integer array with same length as `is_event`.
+         If none, it will use `xrange(len(is_event))`
         :return Array tte: Time-to-event array (discrete version)
-
-
         - Caveats
             tte[i] = numb. timesteps to timestep with event
             Step of event has tte = 0 \
@@ -111,7 +102,6 @@ def get_tte_discrete(is_event, t_elapsed=None):
     stepsize = 1
     if t_elapsed is None:
         t_elapsed = xrange(n)
-
     t_next = t_elapsed[-1] + stepsize
     for i in reversed(xrange(n)):
         if is_event[i]:
@@ -122,14 +112,13 @@ def get_tte_discrete(is_event, t_elapsed=None):
 
 def get_tte_continuous(is_event, t_elapsed):
     """Calculates time to (pointwise measured) next event over a vector.
-
         :param Array is_event: Boolean array
-        :param IntArray t_elapsed: integer array with same length as `is_event` that supports vectorized subtraction. If none, it will use `xrange(len(is_event))`
+        :param IntArray t_elapsed: integer array with same length as `is_event` that supports
+         vectorized subtraction. If none, it will use `xrange(len(is_event))`
         :return Array tte: Time-to-event (continuous version)
 
         TODO::
             Should support discretely sampled, continuously measured TTE
-
         .. Caveats::
             tte[i] = time to *next* event at time t[i]
             (t[i] is exactly at event&/or query)
@@ -140,7 +129,6 @@ def get_tte_continuous(is_event, t_elapsed):
     n = len(is_event)
     if t_elapsed is None:
         t_elapsed = np.int32(xrange(n))
-
     t_next = t_elapsed[-1]
     # lazy initialization to autoinit if difftime
     tte = t_elapsed - t_next
@@ -153,8 +141,8 @@ def get_tte_continuous(is_event, t_elapsed):
 
 def get_tte(is_event, discrete_time, t_elapsed=None):
     """ wrapper to calculate *Time To Event* for input vector.
-
-        :param Boolean discrete_time: if `True`, use `get_tte_discrete`. If `False`, use `get_tte_continuous`.
+        :param Boolean discrete_time: if `True`, use `get_tte_discrete`.
+         If `False`, use `get_tte_continuous`.
     """
     if discrete_time:
         return get_tte_discrete(is_event, t_elapsed)
@@ -164,38 +152,31 @@ def get_tte(is_event, discrete_time, t_elapsed=None):
 
 def get_tse(is_event, t_elapsed=None):
     """ Wrapper to calculate *Time Since Event* for input vector.
-
         Inverse of tte. Safe to use as a feature.
         Always "continuous" method of calculating it.
         tse >0 at time of event
             (if discrete we dont know about the event yet, if continuous
             we know at record of event so superfluous to have tse=0)
         tse = 0 at first step
-
         :param Array is_event: Boolean array
         :param IntArray t_elapsed: None or integer array with same length as `is_event`.
-
             * If none, it will use `t_elapsed.max() - t_elapsed[::-1]`.
-
         .. TODO::
-        reverse-indexing is pretty slow and ugly and not a helpful template for implementing in other languages.
-
+        reverse-indexing is pretty slow and ugly and not a helpful template for
+        implementing in other languages.
     """
     if t_elapsed is not None:
         t_elapsed = t_elapsed.max() - t_elapsed[::-1]
-
     return get_tte_continuous(is_event[::-1], t_elapsed)[::-1]
 
 
 def get_is_not_censored(is_event, discrete_time=True):
     """ Calculates non-censoring indicator `u` for one vector.
-
         :param array is_event: logical or numeric array indicating event.
         :param Boolean discrete_time: if `True`, last observation is conditionally censored.
     """
     n = len(is_event)
     is_not_censored = np.copy(is_event)
-
     if discrete_time:
         # Last obs is conditionally censored
         event_seen = is_event[-1]

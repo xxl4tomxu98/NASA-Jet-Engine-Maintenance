@@ -13,9 +13,7 @@ from tensorflow.keras.callbacks import Callback
 
 def _keras_unstack_hack(ab):
     """Implements tf.unstack(y_true_keras, num=2, axis=-1).
-
        Keras-hack adopted to be compatible with Theano backend.
-
        :param ab: stacked variables
        :return a, b: unstacked variables
     """
@@ -29,7 +27,7 @@ def _keras_unstack_hack(ab):
 
 
 def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
-                  alpha_kernel_scalefactor=None):
+                  scalefactor=None):
     """Elementwise (Lambda) computation of alpha and regularized beta.
         - Alpha:
             (activation)
@@ -52,9 +50,9 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
         - Usage
             .. code-block:: python
                 model.add(TimeDistributed(Dense(2)))
-                model.add(Lambda(wtte.output_lambda, arguments={"init_alpha":init_alpha, 
-                                                        "max_beta_value":2.0
-                                                       }))
+                model.add(Lambda(wtte.output_lambda,
+                                 arguments={"init_alpha":init_alpha, 
+                                            "max_beta_value": 2.0}))
         :param x: tensor with last dimension having length 2 with x[...,0] = alpha, x[...,1] = beta
         :param init_alpha: initial value of `alpha`. Default value is 1.0.
         :param max_beta_value: maximum beta value. Default value is 5.0.
@@ -75,11 +73,7 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
             Call `keras.backend.set_epsilon(1e-08)` to lower epsilon \
             "
             warnings.warn(message)
-    if alpha_kernel_scalefactor is not None:
-        message = "`alpha_kernel_scalefactor` deprecated in favor of `scalefactor` scaling both.\n Setting `scalefactor = alpha_kernel_scalefactor`"
-        warnings.warn(message)
-        scalefactor = alpha_kernel_scalefactor
-
+    
     a, b = _keras_unstack_hack(x)
 
     if scalefactor is not None:
@@ -104,13 +98,11 @@ class OuputActivation(object):
         See this for details.
         - Usage
             .. code-block:: python
-
                wtte_activation = wtte.OuputActivation(init_alpha=1.,
                                                  max_beta_value=4.0).activation
                model.add(Dense(2))
                model.add(Activation(wtte_activation))
     """
-
     def __init__(self, init_alpha=1.0, max_beta_value=5.0):
         self.init_alpha = init_alpha
         self.max_beta_value = max_beta_value
@@ -122,7 +114,6 @@ class OuputActivation(object):
         """
         ab = output_lambda(ab, init_alpha=self.init_alpha,
                            max_beta_value=self.max_beta_value)
-
         return ab
 
 # Backwards Compatibility
@@ -135,7 +126,6 @@ def _keras_split(y_true, y_pred):
     """
     y, u = _keras_unstack_hack(y_true)
     a, b = _keras_unstack_hack(y_pred)
-
     return y, u, a, b
 
 keras_split = _keras_split
@@ -144,7 +134,6 @@ keras_split = _keras_split
 def loglik_discrete(y, u, a, b, epsilon=K.epsilon()):
     hazard0 = K.pow((y + epsilon) / a, b)
     hazard1 = K.pow((y + 1.0) / a, b)
-
     loglikelihoods = u * \
         K.log(K.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
     return loglikelihoods
@@ -183,27 +172,17 @@ class Loss(object):
             tensor (with reduce_loss=False).
         :param kind:  One of 'discrete' or 'continuous'
         :param reduce_loss: 
-        :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]
-        :param regularize: Deprecated.
-        :param location: Deprecated.
-        :param growth: Deprecated.
+        :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]        
         :type reduce_loss: Boolean
     """
     def __init__(self,
                  kind,
                  reduce_loss=True,
                  clip_prob=1e-6,
-                 regularize=False,
-                 location=None,
-                 growth=None):
+                ):
         self.kind = kind
         self.reduce_loss = reduce_loss
-        self.clip_prob = clip_prob
-        if regularize == True or location is not None or growth is not None:
-            raise DeprecationWarning('Directly penalizing beta has been found \
-                                      to be unneccessary when using bounded activation \
-                                      and clipping of log-likelihood.\
-                                      Use this method instead.')
+        self.clip_prob = clip_prob        
 
     def loss_function(self, y_true, y_pred):
         y, u, a, b = _keras_split(y_true, y_pred)
