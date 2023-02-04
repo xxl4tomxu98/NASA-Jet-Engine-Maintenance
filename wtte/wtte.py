@@ -12,8 +12,7 @@ from tensorflow.keras.callbacks import Callback
 
 
 def _keras_unstack_hack(ab):
-    """Implements tf.unstack(y_true_keras, num=2, axis=-1).
-       Keras-hack adopted to be compatible with Theano backend.
+    """Implements tf.unstack(y_true_keras, num=2, axis=-1).       
        :param ab: stacked variables
        :return a, b: unstacked variables
     """
@@ -26,8 +25,7 @@ def _keras_unstack_hack(ab):
     return a, b
 
 
-def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None,
-                  scalefactor=None):
+def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None):
     """Elementwise (Lambda) computation of alpha and regularized beta.
         - Alpha:
             (activation)
