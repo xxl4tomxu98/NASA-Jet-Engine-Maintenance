@@ -8,10 +8,8 @@ import tensorflow as tf
 
 def loglik_continuous(a, b, y_, u_, output_collection=(), name=None):
     """ Returns element-wise Weibull censored log-likelihood.
-
     Continuous weibull log-likelihood. loss=-loglikelihood.
     All input values must be of same type and shape.
-
     :param a:alpha. Positive nonzero `Tensor`.
     :type a: `float32` or `float64`.
     :param b:beta.  Positive nonzero `Tensor`.
@@ -27,24 +25,18 @@ def loglik_continuous(a, b, y_, u_, output_collection=(), name=None):
     """
 
     with tf.name_scope(name, "weibull_loglik_continuous", [a, b, y_, u_]):
-
         ya = tf.div(y_ + 1e-35, a)  # Small optimization y/a
-
         loglik = tf.multiply(u_, tf.log(
             b) + tf.multiply(b, tf.log(ya))) - tf.pow(ya, b)
         tf.add_to_collection(output_collection, loglik)
-
     return(loglik)
 
 
 def loglik_discrete(a, b, y_, u_, output_collection=(), name=None):
     """Returns element-wise Weibull censored discrete log-likelihood.
-
     Unit-discretized weibull log-likelihood. loss=-loglikelihood.
-
     .. note::
         All input values must be of same type and shape.
-
     :param a:alpha. Positive nonzero `Tensor`.
     :type a: `float32` or `float64`.
     :param b:beta.  Positive nonzero `Tensor`.
@@ -64,17 +56,14 @@ def loglik_discrete(a, b, y_, u_, output_collection=(), name=None):
         hazard1 = tf.pow(tf.div(y_ + 1.0, a), b)
         loglik = tf.multiply(u_, tf.log(
             tf.exp(hazard1 - hazard0) - 1.0)) - hazard1
-
         tf.add_to_collection(output_collection, loglik)
     return(loglik)
 
 
 def betapenalty(b, location=10.0, growth=20.0, output_collection=(), name=None):
     """Returns a positive penalty term exploding when beta approaches location.
-
     Adding this term to the loss may prevent overfitting and numerical instability
     of large values of beta (overconfidence). Remember that loss = -loglik+penalty
-
     :param b:beta.  Positive nonzero `Tensor`.
     :type b: `float32` or `float64`.
     :param output_collection:name of the collection to collect result of this op.
@@ -86,5 +75,4 @@ def betapenalty(b, location=10.0, growth=20.0, output_collection=(), name=None):
         scale = growth / location
         penalty = tf.exp(scale * (b - location))
         tf.add_to_collection(output_collection, penalty)
-
     return(penalty)
