@@ -114,7 +114,6 @@ def padded_to_df(padded, column_names, dtypes,
       A row in df is the t'th event for a `id` and has columns from
       `column_names`
     """
-
     def get_is_nonempty_mask(padded):
         """ (internal function) Non-empty masks
         :return is_nonempty: True if `[i,j,:]` has non-zero non-nan -
@@ -147,7 +146,6 @@ def padded_to_df(padded, column_names, dtypes,
         df[id_col] = id_vec
         df[t_col] = ((np.isnan(padded).sum(2) == 0).cumsum(1) - 1)[is_nonempty]
         return df
-
     if len(padded.shape) == 2:
         padded = np.expand_dims(padded, -1)
     n_seqs, max_seq_length, n_features = padded.shape
@@ -191,7 +189,8 @@ def padded_events_to_tte(events, discrete_time, t_elapsed=None):
 
 def padded_events_to_not_censored_vectorized(events):
     """ (Legacy)
-        calculates (non) right-censoring indicators from padded binary events
+        calculates (non) right-censoring indicators from
+        padded binary events
     """
     not_censored = np.zeros_like(events)
     not_censored[~np.isnan(events)] = events[~np.isnan(events)]
@@ -214,7 +213,6 @@ def padded_events_to_not_censored(events, discrete_time):
     return is_not_censored
 
 # MISC / Data munging
-
 # def df_to_padded_memcost(df, id_col='id', t_col='t'):
 #     """
 #         Calculates memory cost of padded using the alternative routes.
@@ -222,7 +220,6 @@ def padded_events_to_not_censored(events, discrete_time):
 #         # To list? Pad betweeen?
 #         # To array ->(pad after)
 #     """
-
 #     print('Not yet implemented')
 #     return None
 
@@ -235,7 +232,6 @@ def _align_padded(padded, align_right):
      If `True`, pads to right direction.
     """
     padded = padded.copy()
-
     seq_lengths = get_padded_seq_lengths(padded)
     if len(padded.shape) == 2:
         # (n_seqs,n_timesteps)
@@ -309,10 +305,9 @@ def df_join_in_endtime(df, constant_per_id_cols='id',
     risky_columns = list(set(['t_elapsed', 't', 't_ix']) &
                          set(df.columns.values))
     if len(risky_columns):
-        print('Warning: df has columns ',
-              risky_columns,
+        print('Warning: df has columns ', risky_columns,
               ', call `df_join_in_endtime` before calculating relative time.',
-              '( otherwise they will be replaced at last step ) ')
+              '(otherwise they will be replaced at last step ) ')
     if type(constant_per_id_cols) is not list:
         constant_per_id_cols = [constant_per_id_cols]
     if abs_endtime is None:
