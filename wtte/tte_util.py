@@ -11,6 +11,7 @@ from six.moves import xrange
 # - Time Since Event is a ticking bomb. Needs better naming/definitions
 #   to ensure that it's either inverse TTE or a feature or if they coincide.
 
+
 def roll_fun(x, size, fun=np.mean, reverse=False):
     """Like cumsum but with any function `fun`. """
     y = np.copy(x)
@@ -88,8 +89,8 @@ def steps_to_true_minimal(is_event):
 def get_tte_discrete(is_event, t_elapsed=None):
     """Calculates discretely measured tte over a vector.
         :param Array is_event: Boolean array
-        :param IntArray t_elapsed: integer array with same length as `is_event`.
-         If none, it will use `xrange(len(is_event))`
+        :param IntArray t_elapsed: integer array with same length as
+         `is_event`. If none, it will use `xrange(len(is_event))`
         :return Array tte: Time-to-event array (discrete version)
         - Caveats
             tte[i] = numb. timesteps to timestep with event
@@ -113,8 +114,9 @@ def get_tte_discrete(is_event, t_elapsed=None):
 def get_tte_continuous(is_event, t_elapsed):
     """Calculates time to (pointwise measured) next event over a vector.
         :param Array is_event: Boolean array
-        :param IntArray t_elapsed: integer array with same length as `is_event` that supports
-         vectorized subtraction. If none, it will use `xrange(len(is_event))`
+        :param IntArray t_elapsed: integer array with same length as
+         `is_event` that supports vectorized subtraction.
+         If none, it will use `xrange(len(is_event))`
         :return Array tte: Time-to-event (continuous version)
 
         TODO::
@@ -159,8 +161,8 @@ def get_tse(is_event, t_elapsed=None):
             we know at record of event so superfluous to have tse=0)
         tse = 0 at first step
         :param Array is_event: Boolean array
-        :param IntArray t_elapsed: None or integer array with same length as `is_event`.
-            * If none, it will use `t_elapsed.max() - t_elapsed[::-1]`.
+        :param IntArray t_elapsed: None or integer array with same length as
+         `is_event`. If none, it will use `t_elapsed.max() - t_elapsed[::-1]`.
         .. TODO::
         reverse-indexing is pretty slow and ugly and not a helpful template for
         implementing in other languages.
@@ -173,7 +175,8 @@ def get_tse(is_event, t_elapsed=None):
 def get_is_not_censored(is_event, discrete_time=True):
     """ Calculates non-censoring indicator `u` for one vector.
         :param array is_event: logical or numeric array indicating event.
-        :param Boolean discrete_time: if `True`, last observation is conditionally censored.
+        :param Boolean discrete_time: if `True`, last observation is
+         conditionally censored.
     """
     n = len(is_event)
     is_not_censored = np.copy(is_event)
@@ -191,5 +194,4 @@ def get_is_not_censored(is_event, discrete_time=True):
             is_not_censored[i] = event_seen
             if is_event[i] and not event_seen:
                 event_seen = is_event[i]
-
     return is_not_censored

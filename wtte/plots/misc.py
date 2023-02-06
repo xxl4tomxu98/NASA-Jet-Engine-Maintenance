@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import numpy as np
 import matplotlib.pyplot as plt
-from six.moves import xrange
 
 from wtte import transforms as tr
 

@@ -22,30 +22,22 @@ def generate_random_df(n_seqs=5,
     4. randomly pick a starttime [0,`starttimes_max`]
     5. Generate random data in the columns at these timesteps
 
-    This means that the only thing we know about a sequence is that it's at maximum `max_seq_length`
+    This means that the only thing we know about a sequence is that it's at
+    maximum `max_seq_length`
 
     :param df: pandas dataframe with columns
-
       * `id`: integer
-
       * `t`: integer
-
       * `dt`: integer mimmicking a global event time
-
       * `t_ix`: integer contiguous user time count per id 0,1,2,..
-
       * `t_elapsed`: integer the time from starttime per id ex 0,1,10,..
-
       * `event`: 0 or 1
-
       * `int_column`: random data
-
       * `double_column`: dandom data
-
-    :param int unique_times: whether there id,elapsed_time has only one obs. Default true
+    :param int unique_times: whether there id,elapsed_time has only one obs.
+     Default true
     :param int starttimes_min: integer to generate `dt` the absolute time
     :param int starttimes_max: integer to generate `dt` the absolute time
-
     :return df: A randomly generated dataframe.
     """
 
@@ -90,7 +82,8 @@ def generate_random_df(n_seqs=5,
 
     # do not assume row indicates event!
     event_column = np.random.randint(2, size=len(t_column))
-    int_column = np.random.randint(low=-5, high=5, size=len(t_column)).astype(int)
+    int_column = np.random.randint(low=-5, high=5, size=len(t_column))\
+                   .astype(int)
     double_column = np.random.uniform(high=1, low=0, size=len(t_column))
 
     df = pd.DataFrame({'id': id_column,
@@ -100,33 +93,24 @@ def generate_random_df(n_seqs=5,
                        'int_column': int_column,
                        'double_column': double_column
                        })
-
     df['t_ix'] = df.groupby(['id'])['t_elapsed'].rank(
         method='dense').astype(int) - 1
     df = df[['id', 'dt', 't_ix', 't_elapsed',
              'event', 'int_column', 'double_column']]
     df = df.reset_index(drop=True)
-
     return df
 
 
 def generate_weibull(A, B, C, shape, discrete_time):
     """Generate Weibull random variables.
-
     Inputs can be scalar or broadcastable to `shape`.
-
     :param A: Generating alpha
     :param B: Generating beta
     :param C: Censoring time
-
     :return: list of `[W, Y, U]`
-
       * `W`: Actual TTE
-
       * `Y`: Censored TTE
-
       * `U`: non-censoring indicators
-
     :rtype: ndarray
     """
     W = np.sort(A * np.power(-np.log(np.random.uniform(0, 1, shape)), 1 / B))

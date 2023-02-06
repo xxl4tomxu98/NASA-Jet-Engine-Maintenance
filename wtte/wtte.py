@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import Callback
 
 
 def _keras_unstack_hack(ab):
-    """Implements tf.unstack(y_true_keras, num=2, axis=-1).       
+    """Implements tf.unstack(y_true_keras, num=2, axis=-1).
        :param ab: stacked variables
        :return a, b: unstacked variables
     """
@@ -41,17 +41,19 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None):
             multiply assumed exp(0)=1 by scale factor `init_alpha`.
         - Beta:
             (activation)
-            We want slow changes when beta-> 0 so Softplus made sense in the original
-            paper but we get similar effect with sigmoid. It also has nice features.
-            (regularization) Use max_beta_value to implicitly regularize the model
-            (initialization) Fixed to begin moving slowly around 1.0
+            We want slow changes when beta-> 0 so Softplus made sense in the
+            original paper but we get similar effect with sigmoid. It also has
+            nice features. (regularization) Use max_beta_value to implicitly
+            regularize the model (initialization) Fixed to begin moving slowly
+            around 1.0
         - Usage
             .. code-block:: python
                 model.add(TimeDistributed(Dense(2)))
                 model.add(Lambda(wtte.output_lambda,
-                                 arguments={"init_alpha":init_alpha, 
+                                 arguments={"init_alpha":init_alpha,
                                             "max_beta_value": 2.0}))
-        :param x: tensor with last dimension having length 2 with x[...,0] = alpha, x[...,1] = beta
+        :param x: tensor with last dimension having length 2 with
+         x[...,0] = alpha, x[...,1] = beta
         :param init_alpha: initial value of `alpha`. Default value is 1.0.
         :param max_beta_value: maximum beta value. Default value is 5.0.
         :param max_alpha_value: maxumum alpha value. Default is `None`.
@@ -66,12 +68,13 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None):
         if K.epsilon() > 1e-07 and K.backend() == 'tensorflow':
             # TODO need to think this through lol
             message = "\
-            Using tensorflow backend and allowing high `max_beta_value` may lead to\n\
+            Using tensorflow backend and allowing high `max_beta_value`\
+            may lead to\n\
             gradient NaN during training unless `K.epsilon()` is small.\n\
             Call `keras.backend.set_epsilon(1e-08)` to lower epsilon \
             "
             warnings.warn(message)
-    
+
     a, b = _keras_unstack_hack(x)
 
     if scalefactor is not None:
@@ -92,7 +95,7 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None):
 
 class OuputActivation(object):
     """ Elementwise computation of alpha and regularized beta.
-        Wrapper to `output_lambda` using keras.layers.Activation. 
+        Wrapper to `output_lambda` using keras.layers.Activation.
         See this for details.
         - Usage
             .. code-block:: python
@@ -108,11 +111,13 @@ class OuputActivation(object):
     def activation(self, ab):
         """ (Internal function) Activation wrapper
         :param ab: original tensor with alpha and beta.
-        :return ab: return of `output_lambda` with `init_alpha` and `max_beta_value`.
+        :return ab: return of `output_lambda` with `init_alpha`
+         and `max_beta_value`.
         """
         ab = output_lambda(ab, init_alpha=self.init_alpha,
                            max_beta_value=self.max_beta_value)
         return ab
+
 
 # Backwards Compatibility
 output_activation = OuputActivation
@@ -125,6 +130,7 @@ def _keras_split(y_true, y_pred):
     y, u = _keras_unstack_hack(y_true)
     a, b = _keras_unstack_hack(y_pred)
     return y, u, a, b
+
 
 keras_split = _keras_split
 
@@ -161,26 +167,27 @@ class Loss(object):
                loss = wtte.Loss(kind='discrete').loss_function
                model.compile(loss=loss, optimizer=RMSprop(lr=0.01))
                # And with masking:
-               loss = wtte.Loss(kind='discrete',reduce_loss=False).loss_function
+               loss = wtte.Loss(kind='discrete', reduce_loss=False)
+                          .loss_function
                model.compile(loss=loss, optimizer=RMSprop(lr=0.01),
                               sample_weight_mode='temporal')
         .. note::
-            With masking keras needs to access each loss-contribution individually.
-            Therefore we do not sum/reduce down to scalar (dim 1), instead return a 
-            tensor (with reduce_loss=False).
+            With masking keras needs to access each loss-contribution
+            individually. Therefore we do not sum/reduce down to scalar
+            (dim 1), instead return a tensor (with reduce_loss=False).
         :param kind:  One of 'discrete' or 'continuous'
-        :param reduce_loss: 
-        :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]        
+        :param reduce_loss:
+        :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]
         :type reduce_loss: Boolean
     """
     def __init__(self,
                  kind,
                  reduce_loss=True,
                  clip_prob=1e-6,
-                ):
+                 ):
         self.kind = kind
         self.reduce_loss = reduce_loss
-        self.clip_prob = clip_prob        
+        self.clip_prob = clip_prob
 
     def loss_function(self, y_true, y_pred):
         y, u, a, b = _keras_split(y_true, y_pred)
@@ -189,13 +196,15 @@ class Loss(object):
         elif self.kind == 'continuous':
             loglikelihoods = loglik_continuous(y, u, a, b)
         if self.clip_prob is not None:
-            loglikelihoods = K.clip(loglikelihoods, 
-                log(self.clip_prob), log(1 - self.clip_prob))
+            loglikelihoods = K.clip(loglikelihoods,
+                                    log(self.clip_prob),
+                                    log(1 - self.clip_prob))
         if self.reduce_loss:
             loss = -1.0 * K.mean(loglikelihoods, axis=-1)
         else:
             loss = -loglikelihoods
         return loss
+
 
 # For backwards-compatibility
 loss = Loss

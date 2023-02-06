@@ -3,8 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import matplotlib.pyplot as plt
-from six.moves import xrange
 from wtte import weibull
 
 
@@ -88,10 +86,9 @@ def weibull_heatmap(
     ax = basic_heatmap(ax, pred, max_horizon, resolution,
                        cmap=cmap)
     ax.set_title(title)
+
     def ax_add_scaled_line(ax, t, y, y_value_max, y_n_pixels, drawstyle,
-                           linestyle='solid',
-                           color='black',
-                           label=None):
+                           linestyle='solid', color='black', label=None):
         # Shifts and scales y to fit on an imshow as we expect it to be, i.e
         # passing through middle of a pixel
         scaled_y = ((y_n_pixels + 0.0) / y_value_max) * y

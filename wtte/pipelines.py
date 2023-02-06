@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import pandas as pd
 from six.moves import xrange
 
 from .transforms import df_join_in_endtime
@@ -24,13 +23,15 @@ def data_pipeline(
         drop_last_timestep=True):
     """Preprocess dataframe and return it in padded tensor format.
         This function is due to change alot.
-        1. Lowers the resolution of the (int) `abs_time_col` ex from epoch sec to epoch day by aggregating\
-          each column using `timestep_aggregation_dict`.
-        2. Padds out with zeros between timesteps and fills with value of `constant_cols`.
+        1. Lowers the resolution of the (int) `abs_time_col` ex from epoch sec
+           to epoch day by aggregating each column using
+           `timestep_aggregation_dict`.
+        2. Padds out with zeros between timesteps and fills with value of
+           `constant_cols`.
         3. Infers or adds/fills an endtime.
-        This outputs tensor as is and leave it to downstream to define events, disalign targets
-        and features (see `shift_discrete_padded_features`) and from that
-        censoring-indicator and tte.
+        This outputs tensor as is and leave it to downstream to define events,
+        disalign targets and features (see `shift_discrete_padded_features`)
+        and from that censoring-indicator and tte.
     """
     if timestep_aggregation_dict is None:
         timestep_aggregation_dict = dict.fromkeys(column_names, "sum")
@@ -50,8 +51,8 @@ def data_pipeline(
     df = df.groupby([id_col, abs_time_col], as_index=False).\
         agg(timestep_aggregation_dict)
     if infer_seq_endtime:
-        # Assuming each sequence has its own start and is not terminated by last event:
-        # Add last time that we knew the sequence was 'alive'.
+        # Assuming each sequence has its own start and is not terminated by
+        # last event: Add last time that we knew the sequence was 'alive'.
         df = df_join_in_endtime(df,
                                 constant_per_id_cols=[
                                     id_col] + constant_cols,

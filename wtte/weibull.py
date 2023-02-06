@@ -69,22 +69,9 @@ def mode(a, b):
     # TODO (mathematically) prove how close it is to discretized mode
     try:
         mode = a * np.power((b - 1.0) / b, 1.0 / b)
-        mode[b <= 1.0] = 0.0
-    except:
-        # scalar case
-        if b <= 1.0:
-            mode = 0
-        else:
-            mode = a * np.power((b - 1.0) / b, 1.0 / b)
+    except b <= 1.0:
+        mode = 0
     return mode
-
-
-def mean(a, b):
-    """ Continuous mean. at most 1 step below discretized mean
-    `E[T ] <= E[Td] + 1` true for positive distributions.
-    """
-    from scipy.special import gamma
-    return a * gamma(1.0 + 1.0 / b)
 
 
 def quantiles(a, b, p):
@@ -98,8 +85,8 @@ def quantiles(a, b, p):
 
 
 def mean(a, b):
-    """Continuous mean. Theoretically at most 1 step below discretized mean
-    `E[T ] <= E[Td] + 1` true for positive distributions.
+    """Continuous mean. Theoretically at most 1 step below discretized
+     mean `E[T ] <= E[Td] + 1` true for positive distributions.
     :param a: Alpha
     :param b: Beta
     :return: `a * gamma(1.0 + 1.0 / b)`
@@ -150,11 +137,13 @@ class conditional_excess():
     """
     def pdf(t, s, a, b):
         t = np.double(t)
-        return hazard(t + s, a, b) * np.exp(-cumulative_hazard(t + s, a, b) + cumulative_hazard(t, a, b))
+        return hazard(t + s, a, b) * np.exp(-cumulative_hazard(t + s, a, b) +
+                                            cumulative_hazard(t, a, b))
 
     def cdf(t, s, a, b):
         t = np.double(t)
-        return 1 - np.exp(-cumulative_hazard(t + s, a, b) + cumulative_hazard(t, a, b))
+        return 1 - np.exp(-cumulative_hazard(t + s, a, b) +
+                          cumulative_hazard(t, a, b))
 
     def quantile(t, a, b, p):
         # TODO this is not tested yet.

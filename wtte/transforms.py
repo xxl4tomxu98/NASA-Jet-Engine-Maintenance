@@ -1,11 +1,9 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 import numpy as np
 import pandas as pd
 from six.moves import xrange
-
 from .tte_util import get_is_not_censored
 from .tte_util import get_tte
 
@@ -23,20 +21,21 @@ def get_padded_seq_lengths(padded):
     else:
         print('not yet implemented')
         # TODO
-
     return seq_lengths
 
 
 def df_to_array(df, column_names, nanpad_right=True, return_lists=False,
                 id_col='id', t_col='t'):
-    """Converts flat pandas df with cols `id,t,col1,col2,..` to array indexed `[id,t,col]`. 
+    """Converts flat pandas df with cols `id,t,col1,col2,..`
+       to array indexed `[id,t,col]`.
     :param df: dataframe with columns:
       * `id`: Any type. A unique key for the sequence.
       * `t`: integer. If `t` is a non-contiguous int vec per id then steps in
         between t's are padded with zeros.
       * `columns` in `column_names` (String list)
     :type df: Pandas dataframe
-    :param Boolean nanpad_right: If `True`, sequences are `np.nan`-padded to `max_seq_len`
+    :param Boolean nanpad_right: If `True`, sequences are `np.nan`-padded to
+     `max_seq_len`
     :param return_lists: Put every tensor in its own subarray
     :param id_col: string column name for `id`
     :param t_col: string column name for `t`
@@ -81,7 +80,8 @@ def df_to_array(df, column_names, nanpad_right=True, return_lists=False,
 
 
 def df_to_padded(df, column_names, id_col='id', t_col='t'):
-    """Pads pandas df to a numpy array of shape `[n_seqs,max_seqlen,n_features]`.
+    """Pads pandas df to a numpy array of shape
+       `[n_seqs,max_seqlen,n_features]`.
         see `df_to_array` for details
     """
     return df_to_array(df, column_names, nanpad_right=True,
@@ -96,10 +96,12 @@ def df_to_subarrays(df, column_names, id_col='id', t_col='t'):
                        return_lists=True, id_col=id_col, t_col=t_col)
 
 
-def padded_to_df(padded, column_names, dtypes, ids=None, id_col='id', t_col='t'):
-    """Takes padded numpy array and converts nonzero entries to pandas dataframe row.
-    Inverse to df_to_padded.
-    :param Array padded: a numpy float array of dimension `[n_seqs,max_seqlen,n_features]`.
+def padded_to_df(padded, column_names, dtypes,
+                 ids=None, id_col='id', t_col='t'):
+    """Takes padded numpy array and converts nonzero entries to pandas
+       dataframe row. Inverse to df_to_padded.
+    :param Array padded: a numpy float array of dimension
+     `[n_seqs,max_seqlen,n_features]`.
     :param list column_names: other columns to expand from df
     :param list dtypes:  the type to cast the float-entries to.
     :type dtypes: String list
@@ -109,13 +111,14 @@ def padded_to_df(padded, column_names, dtypes, ids=None, id_col='id', t_col='t')
     :return df: Dataframe with Columns
       *  `id` (Integer) or the value of `ids`
       *  `t` (Integer).
-      A row in df is the t'th event for a `id` and has columns from `column_names`
+      A row in df is the t'th event for a `id` and has columns from
+      `column_names`
     """
 
     def get_is_nonempty_mask(padded):
         """ (internal function) Non-empty masks
-        :return is_nonempty: True if `[i,j,:]` has non-zero non-nan - entries or
-            j is the start or endpoint of a sequence i
+        :return is_nonempty: True if `[i,j,:]` has non-zero non-nan -
+            entries or j is the start or endpoint of a sequence i
         :type is_nonempty: Boolean Array
         """
         # If any nonzero element then nonempty:
@@ -225,9 +228,11 @@ def padded_events_to_not_censored(events, discrete_time):
 
 
 def _align_padded(padded, align_right):
-    """ (Internal function) Aligns nan-padded temporal arrays to the right (align_right=True) or left.
+    """ (Internal function) Aligns nan-padded temporal arrays to the right
+        (align_right=True) or left.
     :param Array padded: padded array
-    :param align_right: Determines padding orientation (right or left). If `True`, pads to right direction.
+    :param align_right: Determines padding orientation (right or left).
+     If `True`, pads to right direction.
     """
     padded = padded.copy()
 
@@ -278,10 +283,11 @@ def df_join_in_endtime(df, constant_per_id_cols='id',
                        fill_zeros=False):
     """ Join in NaN-rows at timestep of when we stopped observing non-events.
         If we have a dataset consisting of events recorded until a fixed
-        timestamp, that timestamp won't show up in the dataset (it's a non-event).
-        By joining in a row with NaN data at `abs_endtime` we get a boundarytime
-        for each sequence used for TTE-calculation and padding.
-        This is simpler in SQL where you join `on df.dt <= df_last_timestamp.dt`
+        timestamp, that timestamp won't show up in the dataset
+        (it's a non-event). By joining in a row with NaN data at `abs_endtime`
+        we get a boundarytime for each sequence used for TTE-calculation
+        and padding. This is simpler in SQL where you join
+        `on df.dt <= df_last_timestamp.dt`
         .. Protip::
             If discrete time: filter away last interval (ex day)
             upstream as measurements here may be incomplete, i.e if query is in
@@ -290,42 +296,38 @@ def df_join_in_endtime(df, constant_per_id_cols='id',
         :param constant_per_id_cols: identifying id and
                                    columns remaining constant per id&timestep
         :type constant_per_id_cols: String or String list
-        :param String abs_time_col: identifying the wall-clock column df[abs_time_cols].
-        :param df[abs_time_cols]) abs_endtime: The time to join in. If None it's inferred.
+        :param String abs_time_col: identifying the wall-clock column
+         df[abs_time_cols].
+        :param df[abs_time_cols]) abs_endtime: The time to join in.
+         If None it's inferred.
         :type abs_endtime: None or same as df[abs_time_cols].values.
-        :param bool fill_zeros : Whether to attempt to fill NaN with zeros after merge.
-        :return pandas.dataframe df: pandas dataframe where each `id` has rows at the endtime.
+        :param bool fill_zeros : Whether to attempt to fill NaN with zeros
+         after merge.
+        :return pandas.dataframe df: pandas dataframe where each `id` has rows
+         at the endtime.
     """
-    risky_columns = list(set(['t_elapsed', 't', 't_ix']) & set(df.columns.values))
+    risky_columns = list(set(['t_elapsed', 't', 't_ix']) &
+                         set(df.columns.values))
     if len(risky_columns):
         print('Warning: df has columns ',
               risky_columns,
-              ', call `df_join_in_endtime` before calculating any relative time.',
+              ', call `df_join_in_endtime` before calculating relative time.',
               '( otherwise they will be replaced at last step ) ')
-
     if type(constant_per_id_cols) is not list:
         constant_per_id_cols = [constant_per_id_cols]
-
     if abs_endtime is None:
         abs_endtime = df[abs_time_col].max()
-
     df_ids = df[constant_per_id_cols].drop_duplicates()
-
     df_ids[abs_time_col] = abs_endtime
-
     if fill_zeros:
         old_dtypes = df.dtypes.values
         cols = df.columns
-
         df = pd.merge(df_ids, df, how='outer').fillna(0)
-
         for i in xrange(len(old_dtypes)):
             df[cols[i]] = df[cols[i]].astype(old_dtypes[i])
     else:
         df = pd.merge(df_ids, df, how='outer')
-
     df = df.sort_values(by=[constant_per_id_cols[0], abs_time_col])
-
     return df
 
 
@@ -337,14 +339,13 @@ def shift_discrete_padded_features(padded, fill=0):
     Details
     =====
     For mathematical purity and to avoid confusion, in the Discrete case
-    "2015-12-15" means an interval "2015-12-15 00.00 - 2015-12-15 23.59" i.e the data
-    is accessible at "2015-12-15 23.59"  (time when we query our database to
-    do prediction about next day.)
+    "2015-12-15" means an interval "2015-12-15 00.00 - 2015-12-15 23.59"
+    i.e the data is accessible at "2015-12-15 23.59"  (time when we query
+    our database to do prediction about next day.)
     In the continuous case "2015-12-15 23.59" means exactly at
     "2015-12-15 23.59: 00000000".
     Discrete case
     --------
-
     +-+----------------------+------+
     |t|dt                    |Event |
     +=+======================+======+
@@ -354,9 +355,7 @@ def shift_discrete_padded_features(padded, fill=0):
     +-+----------------------+------+
     |2|2015-12-17 00.00-23.59|0     |
     +-+----------------------+------+
-
     etc. In detail:
-
     +---------+-+-+-+-+-+-+----+
     |t        |0|1|2|3|4|5|....|
     +=========+=+=+=+=+=+=+====+
@@ -368,7 +367,6 @@ def shift_discrete_padded_features(padded, fill=0):
     +---------+-+-+-+-+-+-+----+
     |Observed*|F|T|T|T|T|T|....|
     +---------+-+-+-+-+-+-+----+
-
     Continuous case
     --------
     +-+----------------+------+
@@ -380,9 +378,7 @@ def shift_discrete_padded_features(padded, fill=0):
     +-+----------------+------+
     |2|2015-12-17 22.18|0     |
     +-+----------------+------+
-
     etc. In detail:
-
     +---------+-+-+-+-+-+-+---+
     |t        |0|1|2|3|4|5|...|
     +=========+=+=+=+=+=+=+===+
@@ -394,13 +390,12 @@ def shift_discrete_padded_features(padded, fill=0):
     +---------+-+-+-+-+-+-+---+
     |Observed*|T|T|T|T|T|T|...|
     +---------+-+-+-+-+-+-+---+
-
     *Observed = Do we have feature data at this time?*
-
         In the discrete case:
         -> we need to roll data intent as features to the right.
-          -> First timestep typically has no measured features (and we may not even
-          know until the end of the first interval if the sequence even exists!)
+          -> First timestep typically has no measured features (and we may
+             not even know until the end of the first interval if the
+             sequence even exists!)
 
         So there's two options after rolling features to the right:
         1. *Fill in 0s at t=0. (`shift_discrete_padded_features`)*
@@ -408,7 +403,8 @@ def shift_discrete_padded_features(padded, fill=0):
             - if (data <-> event) this exposes the truth (unsafe)!
 
         2. *Remove t=0 from target data*
-            - (dont learn to predict about prospective customers first purchase)
+            - (dont learn to predict about prospective customers first
+               purchase)
             Safest!
         note: We never have target data for the last timestep after rolling.
       Example:
@@ -422,14 +418,15 @@ def shift_discrete_padded_features(padded, fill=0):
     return padded
 
 
-def normalize_padded(padded, means=None, stds=None, only_nonzero=False, epsilon=1e-6):
+def normalize_padded(padded, means=None, stds=None,
+                     only_nonzero=False, epsilon=1e-6):
     """Normalize by last dim of padded with means/stds or calculate them.
         If `means` or `stds` is passed, it simply shifts/scales by them.
-        If only_nonzero, only normalizes nonzero entries. This should be the choice
-        for sparse event data but not default for legacy reasons.
+        If only_nonzero, only normalizes nonzero entries. This should be the
+        choice for sparse event data but not default for legacy reasons.
         :param Array means: location coefficients
         :param Array stds: scale coefficients
-        :param Boolean only_nonzero: Whether to normalize non-zero elements only.
+        :param Boolean only_nonzero: Whether normalize non-zero elements only.
     """
     is_flat = len(padded.shape) == 2
     if is_flat:
