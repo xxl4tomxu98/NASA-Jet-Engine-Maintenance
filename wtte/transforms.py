@@ -98,15 +98,16 @@ def df_to_subarrays(df, column_names, id_col='id', t_col='t'):
 
 def padded_to_df(padded, column_names, dtypes,
                  ids=None, id_col='id', t_col='t'):
-    """Takes padded numpy array and converts nonzero entries to pandas
-       dataframe row. Inverse to df_to_padded.
+    """Takes padded numpy array and converts nonzero entries to
+       pandas dataframe row. Inverse to df_to_padded.
     :param Array padded: a numpy float array of dimension
      `[n_seqs,max_seqlen,n_features]`.
     :param list column_names: other columns to expand from df
     :param list dtypes:  the type to cast the float-entries to.
     :type dtypes: String list
     :param ids: (optional) the ids to attach to each sequence
-    :param id_col: Column where `id` is located. Default value is `id`.
+    :param id_col: Column where `id` is located.
+                   Default value is `id`.
     :param t_col: Column where `t` is located. Default value is `t`.
     :return df: Dataframe with Columns
       *  `id` (Integer) or the value of `ids`
@@ -211,7 +212,6 @@ def padded_events_to_not_censored(events, discrete_time):
             is_not_censored[i][:seq_lengths[i]] = get_is_not_censored(
                 events[i][:seq_lengths[i]], discrete_time)
     return is_not_censored
-
 # MISC / Data munging
 # def df_to_padded_memcost(df, id_col='id', t_col='t'):
 #     """
@@ -277,30 +277,30 @@ def df_join_in_endtime(df, constant_per_id_cols='id',
                        abs_time_col='dt',
                        abs_endtime=None,
                        fill_zeros=False):
-    """ Join in NaN-rows at timestep of when we stopped observing non-events.
-        If we have a dataset consisting of events recorded until a fixed
-        timestamp, that timestamp won't show up in the dataset
-        (it's a non-event). By joining in a row with NaN data at `abs_endtime`
-        we get a boundarytime for each sequence used for TTE-calculation
-        and padding. This is simpler in SQL where you join
-        `on df.dt <= df_last_timestamp.dt`
-        .. Protip::
-            If discrete time: filter away last interval (ex day)
-            upstream as measurements here may be incomplete, i.e if query is in
-            middle of day (we are thus always looking at yesterdays data)
-        :param pandas.dataframe df: Pandas dataframe
-        :param constant_per_id_cols: identifying id and
-                                   columns remaining constant per id&timestep
-        :type constant_per_id_cols: String or String list
-        :param String abs_time_col: identifying the wall-clock column
-         df[abs_time_cols].
-        :param df[abs_time_cols]) abs_endtime: The time to join in.
-         If None it's inferred.
-        :type abs_endtime: None or same as df[abs_time_cols].values.
-        :param bool fill_zeros : Whether to attempt to fill NaN with zeros
-         after merge.
-        :return pandas.dataframe df: pandas dataframe where each `id` has rows
-         at the endtime.
+    """ Join in NaN-rows at timestep of when we stopped observing
+    non-events. If we have a dataset consisting of events recorded
+    until a fixed timestamp, that timestamp won't show up in the
+    dataset(it's a non-event). By joining in a row with NaN data
+    at `abs_endtime`, we get a boundarytime for each sequence
+    used for TTE-calculation and padding. This is simpler in SQL
+    where you join  `on df.dt <= df_last_timestamp.dt`
+    .. Protip::
+        If discrete time: filter away last interval (ex day)
+        upstream as measurements here may be incomplete, i.e if query is in
+        middle of day (we are thus always looking at yesterdays data)
+    :param pandas.dataframe df: Pandas dataframe
+    :param constant_per_id_cols: identifying id and
+                                columns remaining constant per id&timestep
+    :type constant_per_id_cols: String or String list
+    :param String abs_time_col: identifying the wall-clock column
+        df[abs_time_cols].
+    :param df[abs_time_cols]) abs_endtime: The time to join in.
+        If None it's inferred.
+    :type abs_endtime: None or same as df[abs_time_cols].values.
+    :param bool fill_zeros : Whether to attempt to fill NaN with zeros
+        after merge.
+    :return pandas.dataframe df: pandas dataframe where each `id` has rows
+        at the endtime.
     """
     risky_columns = list(set(['t_elapsed', 't', 't_ix']) &
                          set(df.columns.values))

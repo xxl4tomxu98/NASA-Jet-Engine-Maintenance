@@ -1,14 +1,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 import numpy as np
 import matplotlib.pyplot as plt
-
 from wtte import transforms as tr
 
 
-def timeline_plot(padded, title='', cmap="jet", plot=True, fig=None, ax=None):
+def timeline_plot(padded, title='', cmap="jet",\
+                  plot=False, fig=None, ax=None):
     if fig is None or ax is None:
         fig, ax = plt.subplots(ncols=2, sharey=True, figsize=(12, 4))
     ax[0].imshow(padded, interpolation='none',
@@ -21,10 +20,10 @@ def timeline_plot(padded, title='', cmap="jet", plot=True, fig=None, ax=None):
                  cmap=cmap,
                  origin='lower')
     ax[1].set_ylabel('sequence')
-    ax[1].set_xlabel('absolute time')  # (Assuming sequences end today)
+    ax[1].set_xlabel('absolute time')  #(Assuming sequences end today)
     fig.suptitle(title, fontsize=14)
     if plot:
-        fig.show()
+        # fig.show()
         return None, None
     else:
         return fig, ax
@@ -44,7 +43,7 @@ def timeline_aggregate_plot(padded, title='', cmap="jet", plot=True):
     ax[1, 1].set_title('mean/timestep')
     fig.suptitle(title, fontsize=14)
     if plot:
-        fig.show()
+        # fig.show()
         return None, None
     else:
         return fig, ax
