@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Activation, Masking
 from tensorflow.keras.optimizers.legacy import RMSprop
@@ -61,6 +62,7 @@ def load_file(name):
     with open(name, 'r') as file:
         return np.loadtxt(file, delimiter=',')
 
+
 path = "/Users/tomxu/Documents/NASA-Jet-Engine-Maintenance/Data/wtte_keras/"
 np.set_printoptions(suppress=True, threshold=10000)
 train = load_file(path + 'train.csv')
@@ -84,7 +86,7 @@ def build_data(engine, time, x, max_time, is_test):
     # A full history of sensor readings to date for each x
     out_x = np.empty((0, max_time, 24), dtype=np.float32)
     for i in range(100):
-        print("Engine: " + str(i))
+        # print("Engine: " + str(i))
         # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
         max_engine_time = int(np.max(time[engine == i])) + 1
         if is_test:
@@ -111,6 +113,11 @@ test_x = build_data(test_x[:, 0], test_x[:, 1],
 train_u = np.zeros((100, 1), dtype=np.float32)
 train_u += 1
 test_y = np.append(np.reshape(test_y, (100, 1)), train_u, axis=1)
+train_y = tf.cast(train_y, tf.float32)
+test_y = tf.cast(test_y, tf.float32)
+print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
+print("train_x: ", train_x)
+print("train_y: ", train_y)
 """
     Here's the rest of the meat of the demo... actually fitting and training the model.
     We'll also make some test predictions so we can evaluate model performance.
@@ -128,7 +135,7 @@ model.add(Activation(activate))
 # Use the discrete log-likelihood for Weibull survival data as our loss function
 model.compile(loss=weibull_loglik_discrete, optimizer=RMSprop(learning_rate=.001))
 # Fit!
-model.fit(train_x, train_y, epochs=250, batch_size=2000,
+model.fit(train_x, train_y, epochs=5, batch_size=2000,
           verbose=2, validation_data=(test_x, test_y))
 
 # Make some predictions and put them alongside the real TTE and event indicator values
