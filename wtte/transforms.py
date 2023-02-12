@@ -440,7 +440,7 @@ def normalize_padded(padded, means=None, stds=None,
             vals = (padded + zeros_nanmask).reshape(n_obs, n_features)
         else:
             vals = padded.reshape(n_obs, n_features)
-        means = np.nanmean(vals, axis=0, keepdims=False, dtype=np.float128)
+        means = np.nanmean(vals, axis=0, keepdims=False, dtype=np.float64)
         del vals
 
         if any(np.isnan(means)):
@@ -452,7 +452,7 @@ def normalize_padded(padded, means=None, stds=None,
             vals = (padded + zeros_nanmask).reshape(n_obs, n_features)
         else:
             vals = padded.reshape(n_obs, n_features)
-        stds = np.nanstd(vals, axis=0, keepdims=False, dtype=np.float128)
+        stds = np.nanstd(vals, axis=0, keepdims=False, dtype=np.float64)
         del vals
 
         if any(np.isnan(stds)):

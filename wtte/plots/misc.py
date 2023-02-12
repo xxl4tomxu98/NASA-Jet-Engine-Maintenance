@@ -35,11 +35,11 @@ def timeline_aggregate_plot(padded, title='', cmap="jet", plot=True):
     fig, ax[0] = timeline_plot(
         padded, title, cmap=cmap, plot=False, fig=fig, ax=ax[0])
     ax[1, 0].plot(np.nanmean(padded, axis=0), lw=0.5,
-                  c='black', drawstyle='steps-post')
+                  c='orange', drawstyle='steps-post')
     ax[1, 0].set_title('mean/timestep')
     padded = tr.right_pad_to_left_pad(padded)
     ax[1, 1].plot(np.nanmean(padded, axis=0), lw=0.5,
-                  c='black', drawstyle='steps-post')
+                  c='orange', drawstyle='steps-post')
     ax[1, 1].set_title('mean/timestep')
     fig.suptitle(title, fontsize=14)
     if plot:
