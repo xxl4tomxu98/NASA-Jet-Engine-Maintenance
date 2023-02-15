@@ -66,7 +66,6 @@ def output_lambda(x, init_alpha=1.0, max_beta_value=5.0, scalefactor=None):
     """
     if max_beta_value is None or max_beta_value > 3:
         if K.epsilon() > 1e-07 and K.backend() == 'tensorflow':
-            # TODO need to think this through lol
             message = "\
             Using tensorflow backend and allowing high `max_beta_value`\
             may lead to\n\
@@ -100,7 +99,7 @@ class OuputActivation(object):
         - Usage
             .. code-block:: python
                wtte_activation = wtte.OuputActivation(init_alpha=1.,
-                                                 max_beta_value=4.0).activation
+                                    max_beta_value=4.0).activation
                model.add(Dense(2))
                model.add(Activation(wtte_activation))
     """
@@ -136,27 +135,43 @@ keras_split = _keras_split
 
 
 def loglik_discrete(y, u, a, b, epsilon=K.epsilon()):
+    '''
+    Discrete log-likelihood for Weibull hazard function on censored
+    survival data y_true is (samples, 2) tensor containing time-to-event (y),
+    and an event indicator (u) ab_pred is a (samples, 2) tensor containing
+    predicted Weibull alpha (a) and beta (b) parameters
+    '''
     hazard0 = K.pow((y + epsilon) / a, b)
     hazard1 = K.pow((y + 1.0) / a, b)
-    loglikelihoods = u * \
-        K.log(K.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
+    loglikelihoods = -1 * K.mean(u * K.log(K.exp(hazard1 - hazard0)
+                                 - (1.0 - epsilon)) - hazard1)
     return loglikelihoods
 
 
 def loglik_continuous(y, u, a, b, epsilon=K.epsilon()):
     ya = (y + epsilon) / a
-    loglikelihoods = u * (K.log(b) + b * K.log(ya)) - K.pow(ya, b)
+    loglikelihoods = -1 * K.mean(u * (K.log(b) + b * K.log(ya)) - K.pow(ya, b))
     return loglikelihoods
 
 
 def loglik_continuous_conditional_correction(y, u, a, b, epsilon=K.epsilon()):
-    """Integrated conditional excess loss.
-        Explanation TODO
-    """
+    """Integrated conditional excess loss. """
     ya = (y + epsilon) / a
     loglikelihoods = y * \
         (u * (K.log(b) + b * K.log(ya)) - (b / (b + 1.)) * K.pow(ya, b))
     return loglikelihoods
+
+
+def activate(ab):
+    """
+    Custom Keras activation function, outputs alpha neuron using
+    exponentiation and beta using softplus
+    """
+    a = K.exp(ab[:, 0])
+    b = K.softplus(ab[:, 1])
+    a = K.reshape(a, (K.shape(a)[0], 1))
+    b = K.reshape(b, (K.shape(b)[0], 1))
+    return K.concatenate((a, b), axis=1)
 
 
 class Loss(object):

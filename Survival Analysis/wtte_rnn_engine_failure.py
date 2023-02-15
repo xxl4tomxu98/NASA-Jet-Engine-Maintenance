@@ -3,48 +3,8 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Activation, Masking
 from tensorflow.keras.optimizers.legacy import RMSprop
-from tensorflow.keras import backend as k
 from sklearn.preprocessing import normalize
-
-
-"""
-    Discrete log-likelihood for Weibull hazard function on censored survival
-    data y_true is a (samples, 2) tensor containing time-to-event (y),
-    and an event indicator (u) ab_pred is a (samples, 2) tensor containing
-    predicted Weibull alpha (a) and beta (b) parameters   
-"""
-def weibull_loglik_discrete(y_true, ab_pred, name=None):
-    y_ = y_true[:, 0]
-    u_ = y_true[:, 1]
-    a_ = ab_pred[:, 0]
-    b_ = ab_pred[:, 1]
-    hazard0 = k.pow((y_ + 1e-35) / a_, b_)
-    hazard1 = k.pow((y_ + 1) / a_, b_)
-    return -1 * k.mean(u_ * k.log(k.exp(hazard1 - hazard0) - 1.0) - hazard1)
-
-
-"""
-    Not used for this model, but included in case somebody needs it    
-"""
-def weibull_loglik_continuous(y_true, ab_pred, name=None):
-    y_ = y_true[:, 0]
-    u_ = y_true[:, 1]
-    a_ = ab_pred[:, 0]
-    b_ = ab_pred[:, 1]
-    ya = (y_ + 1e-35) / a_
-    return -1 * k.mean(u_ * (k.log(b_) + b_ * k.log(ya)) - k.pow(ya, b_))
-
-
-"""
-    Custom Keras activation function, outputs alpha neuron using
-    exponentiation and beta using softplus
-"""
-def activate(ab):
-    a = k.exp(ab[:, 0])
-    b = k.softplus(ab[:, 1])
-    a = k.reshape(a, (k.shape(a)[0], 1))
-    b = k.reshape(b, (k.shape(b)[0], 1))
-    return k.concatenate((a, b), axis=1)
+from wtte import wtte as wtte
 
 
 """
@@ -58,6 +18,8 @@ def activate(ab):
     There are probably MUCH better ways of doing this, but I don't use
     Numpy that much, and the data parsing isn't the point of this demo anyway.
 """
+
+
 def load_file(name):
     with open(name, 'r') as file:
         return np.loadtxt(file, delimiter=',')
@@ -81,13 +43,15 @@ max_time = 100
 
 
 def build_data(engine, time, x, max_time, is_test):
-    # y[0] will be days remaining, y[1] will be event indicator, always 1 for this data
+    # y[0] will be days remaining, y[1] will be event indicator,
+    # always 1 for this data
     out_y = np.empty((0, 2), dtype=np.float32)
     # A full history of sensor readings to date for each x
     out_x = np.empty((0, max_time, 24), dtype=np.float32)
     for i in range(100):
         # print("Engine: " + str(i))
-        # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
+        # When did the engine fail? (Last day + 1 for train data,
+        # irrelevant for test.)
         max_engine_time = int(np.max(time[engine == i])) + 1
         if is_test:
             start = max_engine_time - 1
@@ -100,10 +64,12 @@ def build_data(engine, time, x, max_time, is_test):
                               np.array((max_engine_time - j, 1), ndmin=2),
                               axis=0)
             xtemp = np.zeros((1, max_time, 24))
-            xtemp[:, max_time-min(j, 99)-1:max_time, :] = engine_x[max(0, j-max_time+1):j+1, :]
+            xtemp[:, max_time-min(j, 99)-1:max_time, :] = \
+                engine_x[max(0, j-max_time+1):j+1, :]
             this_x = np.concatenate((this_x, xtemp))
         out_x = np.concatenate((out_x, this_x))
     return out_x, out_y
+
 
 train_x, train_y = build_data(train[:, 0], train[:, 1],
                               train[:, 2:26], max_time, False)
@@ -119,26 +85,28 @@ print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
 print("train_x: ", train_x)
 print("train_y: ", train_y)
 """
-    Here's the rest of the meat of the demo... actually fitting and training the model.
-    We'll also make some test predictions so we can evaluate model performance.
+    Here's the rest of the meat of the demo... actually fitting and training
+    the model. We'll also make some test predictions so we can evaluate model
+    performance.
 """
 # Start building our model
 model = Sequential()
-# Mask parts of the lookback period that are all zeros (i.e., unobserved) so they don't skew the model
+# Mask parts of the lookback period that are all zeros (i.e., unobserved) so
+# they don't skew the model
 model.add(Masking(mask_value=0., input_shape=(max_time, 24)))
-# LSTM is just a common type of RNN. You could also try anything else (e.g., GRU).
+# LSTM is just a common type of RNN.
 model.add(LSTM(20, input_dim=24))
-# We need 2 neurons to output Alpha and Beta parameters for our Weibull distribution
+# We need 2 neurons to output Alpha and Beta parameters for our Weibull
 model.add(Dense(2))
 # Apply the custom activation function mentioned above
-model.add(Activation(activate))
-# Use the discrete log-likelihood for Weibull survival data as our loss function
-model.compile(loss=weibull_loglik_discrete, optimizer=RMSprop(learning_rate=.001))
+model.add(Activation(wtte.activate))
+# Use the discrete log-likelihood for Weibull survival as loss function
+model.compile(loss=wtte.loglik_discrete, optimizer=RMSprop(learning_rate=.001))
 # Fit!
 model.fit(train_x, train_y, epochs=5, batch_size=2000,
           verbose=2, validation_data=(test_x, test_y))
 
-# Make some predictions and put them alongside the real TTE and event indicator values
+# Make predictions and put alongside the real TTE and event indicator
 test_predict = model.predict(test_x)
 test_predict = np.resize(test_predict, (100, 2))
 test_result = np.concatenate((test_y, test_predict), axis=1)
