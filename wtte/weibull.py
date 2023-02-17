@@ -25,10 +25,10 @@ def cdf(t, a, b):
     :param t: Value
     :param a: Alpha
     :param b: Beta
-    :return: `1 - np.exp(-np.power(t / a, b))`
+    :return: `1 - np.exp(-np.power(t/a, b))`
     """
     t = np.double(t)
-    return 1 - np.exp(-np.power(t / a, b))
+    return 1 - np.exp(-np.power(t/a, b))
 
 
 def pdf(t, a, b):
@@ -36,10 +36,10 @@ def pdf(t, a, b):
     :param t: Value
     :param a: Alpha
     :param b: Beta
-    :return: `(b / a) * np.power(t / a, b - 1) * np.exp(-np.power(t / a, b))`
+    :return: `(b/a) * np.power(t/a, b-1) * np.exp(-np.power(t/a,b))`
     """
     t = np.double(t)
-    return (b / a) * np.power(t / a, b - 1) * np.exp(-np.power(t / a, b))
+    return (b/a) * np.power(t/a, b-1) * np.exp(-np.power(t/a, b))
 
 
 def cmf(t, a, b):
@@ -68,7 +68,7 @@ def mode(a, b):
     # Continuous mode.
     # TODO (mathematically) prove how close it is to discretized mode
     try:
-        mode = a * np.power((b - 1.0) / b, 1.0 / b)
+        mode = a * np.power((b - 1.0)/b, 1.0/b)
     except b <= 1.0:
         mode = 0
     return mode
@@ -79,9 +79,9 @@ def quantiles(a, b, p):
     :param a: Alpha
     :param b: Beta
     :param p:
-    :return: `a * np.power(-np.log(1.0 - p), 1.0 / b)`
+    :return: `a * np.power(-np.log(1.0-p), 1.0/b)`
     """
-    return a * np.power(-np.log(1.0 - p), 1.0 / b)
+    return a * np.power(-np.log(1.0-p), 1.0/b)
 
 
 def mean(a, b):
@@ -89,10 +89,10 @@ def mean(a, b):
      mean `E[T ] <= E[Td] + 1` true for positive distributions.
     :param a: Alpha
     :param b: Beta
-    :return: `a * gamma(1.0 + 1.0 / b)`
+    :return: `a * gamma(1.0 + 1.0/b)`
     """
     from scipy.special import gamma
-    return a * gamma(1.0 + 1.0 / b)
+    return a * gamma(1.0 + 1.0/b)
 
 
 def continuous_loglik(t, a, b, u=1, equality=False):
@@ -153,8 +153,8 @@ class conditional_excess():
         # conditional excess quantile
         # t+s : Pr(Y<t+s|y>t)=p
         print('not tested')
-        L = np.power((t + .0) / a, b)
-        quantile = a * np.power(-np.log(1. - p) - L, 1. / b)
+        L = np.power((t + 0.0)/a, b)
+        quantile = a * np.power(-np.log(1.0-p) - L, 1.0/b)
         return quantile
 
     def mean(t, a, b):
@@ -170,8 +170,8 @@ class conditional_excess():
         from scipy.special import gammainc
         # Regularized lower gamma
         print('not tested')
-        v = 1. + 1. / b
+        v = 1.0 + 1.0/b
         gv = gamma(v)
-        L = np.power((t + .0) / a, b)
-        cemean = a * gv * np.exp(L) * (1 - gammainc(v, t / a) / gv)
+        L = np.power((t + 0.0)/a, b)
+        cemean = a * gv * np.exp(L) * (1 - gammainc(v, t/a)/gv)
         return cemean

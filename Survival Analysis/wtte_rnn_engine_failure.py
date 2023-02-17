@@ -9,19 +9,6 @@ sys.path.insert(0,'..')
 from wtte import wtte as wtte
 
 
-"""
-    Load and parse engine data files into:
-       - an (engine/day, observed history, sensor readings) x tensor,
-         where observed history is 100 days, zero-padded for days
-         that don't have a full 100 days of observed history
-         (e.g., first observed day for an engine)
-       - an (engine/day, 2) tensor containing time-to-event and 1
-         (since all engines failed)
-    There are probably MUCH better ways of doing this, but I don't use
-    Numpy that much, and the data parsing isn't the point of this demo anyway.
-"""
-
-
 def load_file(name):
     with open(name, 'r') as file:
         return np.loadtxt(file, delimiter=',')
@@ -45,6 +32,15 @@ max_time = 100
 
 
 def build_data(engine, time, x, max_time, is_test):
+    """
+    Load and parse engine data files into:
+       - an (engine/day, observed history, sensor readings) x tensor,
+         where observed history is 100 days, zero-padded for days
+         that don't have a full 100 days of observed history
+         (e.g., first observed day for an engine)
+       - an (engine/day, 2) tensor containing time-to-event and 1
+         (since all engines failed)    
+    """
     # y[0] will be days remaining, y[1] will be event indicator,
     # always 1 for this data
     out_y = np.empty((0, 2), dtype=np.float32)

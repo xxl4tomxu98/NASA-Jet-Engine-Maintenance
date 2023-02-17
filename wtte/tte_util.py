@@ -5,11 +5,11 @@ from __future__ import print_function
 import numpy as np
 from six.moves import xrange
 
-# TODO
+
 # - Proper tests of everything
 # - be clearer about meaning of t_elapsed, t_ix and either (t)
 # - Time Since Event is a ticking bomb. Needs better naming/definitions
-#   to ensure that it's either inverse TTE or a feature or if they coincide.
+# - ensure that it's either inverse TTE or a feature or if they coincide.
 
 
 def roll_fun(x, size, fun=np.mean, reverse=False):
@@ -95,7 +95,7 @@ def get_tte_discrete(is_event, t_elapsed=None):
         - Caveats
             tte[i] = numb. timesteps to timestep with event
             Step of event has tte = 0 \
-           (event happened at time [t,t+1))
+            (event happened at time [t,t+1))
             tte[-1]=1 if no event (censored data)
     """
     n = len(is_event)
@@ -143,8 +143,8 @@ def get_tte_continuous(is_event, t_elapsed):
 
 def get_tte(is_event, discrete_time, t_elapsed=None):
     """ wrapper to calculate *Time To Event* for input vector.
-        :param Boolean discrete_time: if `True`, use `get_tte_discrete`.
-         If `False`, use `get_tte_continuous`.
+        :param Boolean discrete_time: if `True`, use
+         `get_tte_discrete`.If `False`, use `get_tte_continuous`.
     """
     if discrete_time:
         return get_tte_discrete(is_event, t_elapsed)
@@ -164,8 +164,8 @@ def get_tse(is_event, t_elapsed=None):
         :param IntArray t_elapsed: None or integer array with same length as
          `is_event`. If none, it will use `t_elapsed.max() - t_elapsed[::-1]`.
         .. TODO::
-        reverse-indexing is pretty slow and ugly and not a helpful template for
-        implementing in other languages.
+        reverse-indexing is pretty slow and ugly and not a helpful
+        template for implementing in other languages.
     """
     if t_elapsed is not None:
         t_elapsed = t_elapsed.max() - t_elapsed[::-1]
