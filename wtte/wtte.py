@@ -143,14 +143,14 @@ def loglik_discrete(y, u, a, b, epsilon=K.epsilon()):
     '''
     hazard0 = K.pow((y + epsilon) / a, b)
     hazard1 = K.pow((y + 1.0) / a, b)
-    loglikelihoods = -1 * K.mean(u * K.log(K.exp(hazard1 - hazard0)
-                                 - (1.0 - epsilon)) - hazard1)
+    loglikelihoods = u * K.log(K.exp(hazard1 - hazard0)
+                                 - (1.0 - epsilon)) - hazard1
     return loglikelihoods
 
 
 def loglik_continuous(y, u, a, b, epsilon=K.epsilon()):
     ya = (y + epsilon) / a
-    loglikelihoods = -1 * K.mean(u * (K.log(b) + b * K.log(ya)) - K.pow(ya, b))
+    loglikelihoods = u * (K.log(b) + b * K.log(ya)) - K.pow(ya, b)
     return loglikelihoods
 
 

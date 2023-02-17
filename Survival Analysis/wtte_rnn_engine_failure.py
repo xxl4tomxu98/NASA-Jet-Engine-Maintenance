@@ -101,7 +101,8 @@ model.add(Dense(2))
 # Apply the custom activation function mentioned above
 model.add(Activation(wtte.activate))
 # Use the discrete log-likelihood for Weibull survival as loss function
-model.compile(loss=wtte.loglik_discrete, optimizer=RMSprop(learning_rate=.001))
+loss = wtte.loss(kind='discrete', reduce_loss=False).loss_function
+model.compile(loss=loss, optimizer=RMSprop(learning_rate=.001))
 # Fit!
 model.fit(train_x, train_y, epochs=5, batch_size=2000,
           verbose=2, validation_data=(test_x, test_y))
