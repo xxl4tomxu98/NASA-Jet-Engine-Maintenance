@@ -4,6 +4,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Activation, Masking
 from tensorflow.keras.optimizers.legacy import RMSprop
 from sklearn.preprocessing import normalize
+import sys
+sys.path.insert(0,'..')
 from wtte import wtte as wtte
 
 
