@@ -1,51 +1,64 @@
 '''
 DL models (FNN, 1D CNN and CNN-LSTM) evaluation on N-CMAPSS
 '''
-## Import libraries in python
+
+
+# Import libraries in python
 import gc
 import argparse
 import os
-import json
-import logging
-import sys
-import h5py
-import time
-import matplotlib
+# import json
+# import logging
+# import sys
+# import h5py
+# import time
+# import matplotlib
 import numpy as np
-import pandas as pd
-from pandas import DataFrame
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-import math
+# import pandas as pd
+# from pandas import DataFrame
+# import matplotlib.pyplot as plt
+# from matplotlib import gridspec
+# import math
 import random
-import importlib
-from scipy.stats import randint, expon, uniform
-import sklearn as sk
-from sklearn import svm
-from sklearn.utils import shuffle
-from sklearn import metrics
-from sklearn import preprocessing
-from sklearn import pipeline
+# import importlib
+# from scipy.stats import randint, expon, uniform
+# import sklearn as sk
+# from sklearn import svm
+# from sklearn.utils import shuffle
+# from sklearn import metrics
+# from sklearn import preprocessing
+# from sklearn import pipeline
 # from sklearn.metrics import mean_squared_error
-from math import sqrt
-import scipy.stats as stats
-from utils.data_preparation_unit import df_all_creator, df_train_creator, df_test_creator, Input_Gen
+# from math import sqrt
+# import scipy.stats as stats
+from utils.data_preparation_unit import df_all_creator, \
+                                        df_train_creator, \
+                                        df_test_creator, Input_Gen
 
 seed = 0
 random.seed(0)
 np.random.seed(seed)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_filedir = os.path.join(current_dir, 'Data/N-CMAPSS')
-data_filepath = os.path.join(current_dir, 'Data/N-CMAPSS', 'N-CMAPSS_DS02-006.h5')
+data_filepath = os.path.join(current_dir, 'Data/N-CMAPSS',
+                             'N-CMAPSS_DS02-006.h5')
 
 
 def main():
     # current_dir = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser(description='sample creator')
-    parser.add_argument('-w', type=int, default=10, help='window length', required=True)
-    parser.add_argument('-s', type=int, default=10, help='stride of window')
-    parser.add_argument('--sampling', type=int, default=1, help='sub sampling of the given data. If it is 10, then this indicates that we assumes 0.1Hz of data collection')
-    parser.add_argument('--test', type=int, default='non', help='select train or test, if it is zero, then extract samples from the engines used for training')
+    parser.add_argument('-w', type=int, default=10,
+                        help='window length', required=True)
+    parser.add_argument('-s', type=int, default=10,
+                        help='stride of window')
+    parser.add_argument('--sampling', type=int, default=1,
+                        help='sub sampling of the given data. If it is 10,\
+                              then this indicates that we assumes 0.1Hz\
+                              of data collection')
+    parser.add_argument('--test', type=int, default='non',
+                        help='select train or test, if it is zero, then\
+                               extract samples from the engines used\
+                               for training')
     args = parser.parse_args()
     sequence_length = args.w
     stride = args.s
@@ -86,14 +99,14 @@ def main():
     df_train = df_train_creator(df_all, units_index_train)
     print(df_train)
     print(df_train.columns)
-    print("num of inputs: ", len(df_train.columns) )
+    print("num of inputs: ", len(df_train.columns))
     df_test = df_test_creator(df_all, units_index_test)
     print(df_test)
     print(df_test.columns)
     print("num of inputs: ", len(df_test.columns))
     del df_all
     gc.collect()
-    df_all = pd.DataFrame()
+    # df_all = pd.DataFrame()
     sample_dir_path = os.path.join(data_filedir, 'Samples_whole')
     sample_folder = os.path.isdir(sample_dir_path)
     if not sample_folder:
@@ -103,13 +116,21 @@ def main():
     sequence_cols = df_train.columns.difference(['RUL', 'unit'])
     if selector == 0:
         for unit_index in units_index_train:
-            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols,
-                                   sample_dir_path, unit_index, sampling, stride =stride)
+            data_class = Input_Gen(df_train, df_test,
+                                   cols_normalize,
+                                   sequence_length,
+                                   sequence_cols,
+                                   sample_dir_path,
+                                   unit_index,
+                                   sampling,
+                                   stride=stride)
             data_class.seq_gen()
     else:
         for unit_index in units_index_test:
-            data_class = Input_Gen(df_train, df_test, cols_normalize, sequence_length, sequence_cols,
-                                   sample_dir_path, unit_index, sampling, stride =stride)
+            data_class = Input_Gen(df_train, df_test, cols_normalize,
+                                   sequence_length, sequence_cols,
+                                   sample_dir_path, unit_index,
+                                   sampling, stride=stride)
             data_class.seq_gen()
 
 
