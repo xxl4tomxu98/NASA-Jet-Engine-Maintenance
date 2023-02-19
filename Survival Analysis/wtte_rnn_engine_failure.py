@@ -5,8 +5,8 @@ from tensorflow.keras.layers import Dense, LSTM, Activation, Masking
 from tensorflow.keras.optimizers.legacy import RMSprop
 from sklearn.preprocessing import normalize
 import sys
-sys.path.insert(0,'..')
-from wtte import wtte as wtte
+sys.path.insert(0, '..')
+from wtte import wtte as wtte  # noqa
 
 
 def load_file(name):
@@ -39,7 +39,7 @@ def build_data(engine, time, x, max_time, is_test):
          that don't have a full 100 days of observed history
          (e.g., first observed day for an engine)
        - an (engine/day, 2) tensor containing time-to-event and 1
-         (since all engines failed)    
+         (since all engines failed)
     """
     # y[0] will be days remaining, y[1] will be event indicator,
     # always 1 for this data
