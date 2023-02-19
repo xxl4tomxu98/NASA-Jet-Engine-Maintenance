@@ -442,7 +442,6 @@ def normalize_padded(padded, means=None, stds=None,
             vals = padded.reshape(n_obs, n_features)
         means = np.nanmean(vals, axis=0, keepdims=False, dtype=np.float64)
         del vals
-
         if any(np.isnan(means)):
             means[np.isnan(means)] = 0  # If mean of empty slice.
         means = means.astype(padded.dtype)
@@ -454,7 +453,6 @@ def normalize_padded(padded, means=None, stds=None,
             vals = padded.reshape(n_obs, n_features)
         stds = np.nanstd(vals, axis=0, keepdims=False, dtype=np.float64)
         del vals
-
         if any(np.isnan(stds)):
             stds[np.isnan(stds)] = 1  # If no non-nan (and/or nonzero) elements
         stds = stds.astype(padded.dtype)

@@ -119,3 +119,50 @@ def data_pipeline(
                 :, :, constant_cols_ix] + nan_mask
     seq_ids = df[id_col].unique()
     return padded, padded_t, seq_ids, df
+
+
+def build_data(index, time, x, look_back, is_test, mask_value):
+    """
+    Load and parse input dataset into:
+       - an (index/day, look_back, features) x tensor, zero-padded for days
+         that don't have a full look_back days of observed history (e.g.,
+         first observed day for an index combination)
+       - an (index/day, 2) tensor containing time-to-event and action event
+         this case would be all 1 if all unit failed
+       - x: feature subset data frame (object)
+       - look_back: observed history days or cycles (int)
+       - is_test: whether x is test data (boolean)
+       - index: indexing units of the panel data
+       - time: time or cycle series (int of days or int of cycles)
+    """
+    # y[0] will be days remaining, y[1] will be action event,
+    # always 1 for this data
+    out_y = []
+    # number of features
+    d = x.shape[1]
+    # A full history of sensor readings to date for each x
+    out_x = []
+    N = len(index)
+    for i in range(N):
+        # Last day + 1 for train data is event date, irrelevant for test.
+        max_series_time = int(np.max(time[index == i])) + 1
+        if is_test:
+            start = max_series_time - 1
+        else:
+            start = 0
+        this_x = []
+        for j in range(start, max_series_time):
+            # subset of df for that particular unit
+            unit_x = x[index == i]
+            out_y.append(np.array((max_series_time-j, 1), ndmin=2))
+            xtemp = np.zeros((1, look_back, d))
+            xtemp += mask_value
+            # xtemp = np.full((1, max_time, d), mask_value)
+            xtemp[:, look_back-min(j, 99)-1:look_back, :] = \
+                unit_x[max(0, j-look_back+1), :]
+            this_x.append(xtemp)
+        this_x = np.concatenate(this_x)
+        out_x.append(this_x)
+    out_x = np.concatenate(out_x)
+    out_y = np.concatenate(out_y)
+    return out_x, out_y
