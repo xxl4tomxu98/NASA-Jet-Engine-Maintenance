@@ -121,48 +121,46 @@ def data_pipeline(
     return padded, padded_t, seq_ids, df
 
 
-def build_data(index, time, x, look_back, is_test, mask_value):
+def build_data(unit, time, x, look_back, is_test, mask_value=0):
     """
     Load and parse input dataset into:
-       - an (index/day, look_back, features) x tensor, zero-padded for days
+       - an (unit/day, look_back, features) x tensor, zero-padded for days
          that don't have a full look_back days of observed history (e.g.,
          first observed day for an index combination)
-       - an (index/day, 2) tensor containing time-to-event and action event
+       - an (unit/day, 2) tensor containing time-to-event and action event
          this case would be all 1 if all unit failed
        - x: feature subset data frame (object)
        - look_back: observed history days or cycles (int)
        - is_test: whether x is test data (boolean)
-       - index: indexing units of the panel data
+       - unit: indexing units of the panel data
        - time: time or cycle series (int of days or int of cycles)
     """
-    # y[0] will be days remaining, y[1] will be action event,
+    # y[0] will be days remaining, y[1] will be maint action event,
     # always 1 for this data
-    out_y = []
-    # number of features
+    out_y = np.empty((0, 2), dtype=np.float32)
+    # feature number
     d = x.shape[1]
-    # A full history of sensor readings to date for each x
-    out_x = []
-    N = len(index)
+    # A full history of feature columns to date for each x
+    out_x = np.empty((0, look_back, d), dtype=np.float32)
+    N = np.unique(unit).shape[0]
     for i in range(N):
-        # Last day + 1 for train data is event date, irrelevant for test.
-        max_series_time = int(np.max(time[index == i])) + 1
+        # print("Unit: " + str(i))
+        # When did the engine fail? (Last day + 1 for train data,
+        # irrelevant for test.)
+        max_unit_time = int(np.max(time[unit == i])) + 1
         if is_test:
-            start = max_series_time - 1
+            start = max_unit_time - 1
         else:
             start = 0
-        this_x = []
-        for j in range(start, max_series_time):
-            # subset of df for that particular unit
-            unit_x = x[index == i]
-            out_y.append(np.array((max_series_time-j, 1), ndmin=2))
+        this_x = np.empty((0, look_back, d), dtype=np.float32)
+        for j in range(start, max_unit_time):
+            engine_x = x[unit == i]
+            out_y = np.append(out_y,
+                              np.array((max_unit_time-j, 1), ndmin=2),
+                              axis=0)
             xtemp = np.zeros((1, look_back, d))
-            xtemp += mask_value
-            # xtemp = np.full((1, max_time, d), mask_value)
             xtemp[:, look_back-min(j, 99)-1:look_back, :] = \
-                unit_x[max(0, j-look_back+1), :]
-            this_x.append(xtemp)
-        this_x = np.concatenate(this_x)
-        out_x.append(this_x)
-    out_x = np.concatenate(out_x)
-    out_y = np.concatenate(out_y)
+                engine_x[max(0, j-look_back+1):j+1, :]
+            this_x = np.concatenate((this_x, xtemp))
+        out_x = np.concatenate((out_x, this_x))
     return out_x, out_y
