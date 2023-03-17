@@ -25,28 +25,27 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - Linear, Piecewise-Linear, Exponential Degradation, and ARIMA model for RUL Prediction
 - Pattern similarity based forecasting
 - Similarity-based model for RUL Prediction
-- LSTM model for RUL Prediction
-- LSTM model for binary and multiclass classification
+- LSTM model for RUL Prediction and binary and multiclass classification
 - RNN model for binary and multiclass classification
 - 1D CNN for binary and multiclass classification
 - 1D CNN-RNN for binary and multiclass classification
 - 1D CNN-GRU for binary and multiclass classification
 - 1D CNN-LSTM for binary and multiclass classification
 - 1D CNN-SVM for binary classification
-- Attension in GRU
+- Attention in GRU
 - Logistic regression classification
 - K nearest neighbors classification
 - Support vector machines (linear and RBF kernels) classifiers and regressors
-- Naive Bayes classification
+- Naive Bayes and Bayesian Network Models
 - Decision trees classification
 - Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers and regressors
 - Autokeras failure prediction
-- Tsfresh
+- Tsfresh, sktime, scikit-time
 - DTW and Time series clustering
 - Genetic Algorithm
 - Hidden Markov Models
-- Survival Analysis
-- Autoencoder
+- Survival Analysis - gradient boosting survival, random survival forest, survival support vector machines
+- Autoencoder - Anamaly Detection
 - Mulivariant Gaussian Unsupervised Learning
 - Bayesian Structural Time Series (BSTS)
 
