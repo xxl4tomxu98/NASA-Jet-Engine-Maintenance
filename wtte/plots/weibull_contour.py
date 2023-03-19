@@ -5,7 +5,6 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from six.moves import xrange
-
 from wtte import weibull
 
 
@@ -20,8 +19,7 @@ def weibull_contour(Y, U, is_discrete, true_alpha, true_beta,
     else:
         fun = weibull.continuous_loglik
     for i in xrange(len(Y)):
-        loglik = loglik + \
-            fun(Y[i], x_grid, y_grid, U[i])
+        loglik = loglik + fun(Y[i], x_grid, y_grid, U[i])
     z_grid = loglik / len(Y)
     plt.figure()
     if logx:

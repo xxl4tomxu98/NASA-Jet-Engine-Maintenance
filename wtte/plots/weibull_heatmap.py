@@ -83,8 +83,7 @@ def weibull_heatmap(
         np.tile(a.reshape(n, 1), (1, resolution)),
         np.tile(b.reshape(n, 1), (1, resolution))
     )
-    ax = basic_heatmap(ax, pred, max_horizon, resolution,
-                       cmap=cmap)
+    ax = basic_heatmap(ax, pred, max_horizon, resolution, cmap=cmap)
     ax.set_title(title)
 
     def ax_add_scaled_line(ax, t, y, y_value_max, y_n_pixels, drawstyle,
