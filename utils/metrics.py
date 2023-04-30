@@ -23,7 +23,8 @@ def _naive_forecasting(actual: np.ndarray, seasonality: int = 1):
 
 
 def _relative_error(
-    actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None
+    actual: np.ndarray, predicted: np.ndarray,
+    benchmark: np.ndarray = None
 ):
     """Relative Error"""
     if benchmark is None or isinstance(benchmark, int):
@@ -33,7 +34,8 @@ def _relative_error(
         else:
             seasonality = benchmark
         return _error(actual[seasonality:], predicted[seasonality:]) / (
-            _error(actual[seasonality:], _naive_forecasting(actual, seasonality))
+            _error(actual[seasonality:],
+                   _naive_forecasting(actual, seasonality))
             + EPSILON
         )
 
@@ -41,7 +43,8 @@ def _relative_error(
 
 
 def _bounded_relative_error(
-    actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None
+    actual: np.ndarray, predicted: np.ndarray,
+    benchmark: np.ndarray = None
 ):
     """Bounded Relative Error"""
     if benchmark is None or isinstance(benchmark, int):
@@ -53,7 +56,8 @@ def _bounded_relative_error(
 
         abs_err = np.abs(_error(actual[seasonality:], predicted[seasonality:]))
         abs_err_bench = np.abs(
-            _error(actual[seasonality:], _naive_forecasting(actual, seasonality))
+            _error(actual[seasonality:],
+                   _naive_forecasting(actual, seasonality))
         )
     else:
         abs_err = np.abs(_error(actual, predicted))
@@ -64,7 +68,8 @@ def _bounded_relative_error(
 
 def _geometric_mean(a, axis=0, dtype=None):
     """Geometric mean"""
-    if not isinstance(a, np.ndarray):  # if not an ndarray object attempt to convert it
+    # if not an ndarray object attempt to convert it
+    if not isinstance(a, np.ndarray):
         log_a = np.log(np.array(a, dtype=dtype))
     elif dtype:  # Must change the default dtype allowing array type
         if isinstance(a, np.ma.MaskedArray):
@@ -169,13 +174,14 @@ def maape(actual: np.ndarray, predicted: np.ndarray):
     Mean Arctangent Absolute Percentage Error
     Note: result is NOT multiplied by 100
     """
-    return np.mean(np.arctan(np.abs((actual - predicted) / (actual + EPSILON))))
+    return np.mean(np.arctan(np.abs((actual - predicted)/(actual + EPSILON))))
 
 
 def mase(actual: np.ndarray, predicted: np.ndarray, seasonality: int = 1):
     """
     Mean Absolute Scaled Error
-    Baseline (benchmark) is computed with naive forecasting (shifted by @seasonality)
+    Baseline (benchmark) is computed with naive forecasting
+    (shifted by @seasonality)
     """
     return mae(actual, predicted) / mae(
         actual[seasonality:], _naive_forecasting(actual, seasonality)
@@ -186,7 +192,7 @@ def std_ae(actual: np.ndarray, predicted: np.ndarray):
     """Normalized Absolute Error"""
     __mae = mae(actual, predicted)
     return np.sqrt(
-        np.sum(np.square(_error(actual, predicted) - __mae)) / (len(actual) - 1)
+        np.sum(np.square(_error(actual, predicted) - __mae))/(len(actual) - 1)
     )
 
 
@@ -239,7 +245,8 @@ def rrse(actual: np.ndarray, predicted: np.ndarray):
     )
 
 
-def mre(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def mre(actual: np.ndarray, predicted: np.ndarray,
+        benchmark: np.ndarray = None):
     """Mean Relative Error"""
     return np.mean(_relative_error(actual, predicted, benchmark))
 
@@ -251,27 +258,33 @@ def rae(actual: np.ndarray, predicted: np.ndarray):
     )
 
 
-def mrae(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def mrae(actual: np.ndarray, predicted: np.ndarray,
+         benchmark: np.ndarray = None):
     """Mean Relative Absolute Error"""
     return np.mean(np.abs(_relative_error(actual, predicted, benchmark)))
 
 
-def mdrae(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def mdrae(actual: np.ndarray, predicted: np.ndarray,
+          benchmark: np.ndarray = None):
     """Median Relative Absolute Error"""
     return np.median(np.abs(_relative_error(actual, predicted, benchmark)))
 
 
-def gmrae(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def gmrae(actual: np.ndarray, predicted: np.ndarray,
+          benchmark: np.ndarray = None):
     """Geometric Mean Relative Absolute Error"""
-    return _geometric_mean(np.abs(_relative_error(actual, predicted, benchmark)))
+    return _geometric_mean(np.abs(_relative_error(actual, predicted,
+                                                  benchmark)))
 
 
-def mbrae(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def mbrae(actual: np.ndarray, predicted: np.ndarray,
+          benchmark: np.ndarray = None):
     """Mean Bounded Relative Absolute Error"""
     return np.mean(_bounded_relative_error(actual, predicted, benchmark))
 
 
-def umbrae(actual: np.ndarray, predicted: np.ndarray, benchmark: np.ndarray = None):
+def umbrae(actual: np.ndarray, predicted: np.ndarray,
+           benchmark: np.ndarray = None):
     """Unscaled Mean Bounded Relative Absolute Error"""
     __mbrae = mbrae(actual, predicted, benchmark)
     return __mbrae / (1 - __mbrae)
@@ -281,7 +294,8 @@ def mda(actual: np.ndarray, predicted: np.ndarray):
     """Mean Directional Accuracy"""
     return np.mean(
         (
-            np.sign(actual[1:] - actual[:-1]) == np.sign(predicted[1:] - predicted[:-1])
+            np.sign(actual[1:] - actual[:-1]) == np.sign(predicted[1:] -
+                                                         predicted[:-1])
         ).astype(int)
     )
 
@@ -328,7 +342,8 @@ METRICS = {
 
 
 def evaluate(
-    actual: np.ndarray, predicted: np.ndarray, metrics=("mae", "rmse", "mape", "r2")
+    actual: np.ndarray, predicted: np.ndarray, metrics=("mae", "rmse",
+                                                        "mape", "r2")
 ):
     results = {}
     for name in metrics:
