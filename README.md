@@ -7,7 +7,7 @@ The objective of this project is to implement various Predictive Maintenance met
 1. Classification: Predicting the failure of machine in upcoming n days
 2. Regression: Predicting the remaining useful life of a machine (RUL)
 3. Anomaly Detection: Unsupervised learning
-4. Component or system survival analysis
+4. Survival analysis: Stoistic modeling of probability hazards or survivals
 
 ## Data
 Data sets consists of multiple multivariate time series. Each time series is from a different engine – i.e., the data can be considered to be from a fleet of engines of the same type. You can find the data [here](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps).
@@ -40,11 +40,11 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - Decision trees classification
 - Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers and regressors
 - Autokeras failure prediction
-- Tsfresh, sktime, scikit-time
+- Tsfresh, sktime, scikit-time, scikit-survival, py-survival
 - DTW and Time series clustering
 - Genetic Algorithm
 - Hidden Markov Models
-- Survival Analysis - gradient boosting survival, random survival forest, survival support vector machines, Cox & Weibull Probability
+- Survival Analysis - gradient boosting survival, random survival forest, survival support vector machines, Cox & Weibull probability
 - Autoencoder - Anamaly Detection
 - Mulivariant Gaussian Unsupervised Learning
 - Bayesian Structural Time Series (BSTS)
