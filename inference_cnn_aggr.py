@@ -1,7 +1,7 @@
 '''
 DL models (FNN, 1D CNN and CNN-LSTM) evaluation on N-CMAPSS
 '''
-## Import libraries in python
+
 import gc
 import argparse
 import os
@@ -49,17 +49,21 @@ from tensorflow.keras import backend
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, Embedding
-from tensorflow.keras.layers import BatchNormalization, Activation, LSTM, TimeDistributed, Bidirectional
+from tensorflow.keras.layers import BatchNormalization, Activation, LSTM, \
+                                    TimeDistributed, Bidirectional
 from tensorflow.keras.layers import Conv1D
 from tensorflow.keras.layers import MaxPooling1D
 from tensorflow.keras.layers import concatenate
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
-from tensorflow.python.framework.convert_to_constants import  convert_variables_to_constants_v2_as_graph
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, \
+                                       LearningRateScheduler
+from tensorflow.python.framework.convert_to_constants import \
+     convert_variables_to_constants_v2_as_graph
 from tensorflow.keras.initializers import GlorotNormal, GlorotUniform
 
 initializer = GlorotNormal(seed=0)
 # initializer = GlorotUniform(seed=0)
-from utils.data_preparation_unit import df_all_creator, df_train_creator, df_test_creator, Input_Gen
+from utils.data_preparation_unit import df_all_creator, df_train_creator, \
+                                        df_test_creator, Input_Gen
 from utils.dnn import one_dcnn
 
 # import tensorflow.compat.v1 as tf
@@ -74,9 +78,8 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # config = ConfigProto()
 # config.gpu_options.allow_growth = True
 # session = InteractiveSession(config=config)
-
-#gpus = tf.config.experimental.list_physical_devices('GPU')
-#for gpu in gpus:
+# gpus = tf.config.experimental.list_physical_devices('GPU')
+# for gpu in gpus:
 #    tf.config.experimental.set_memory_growth(gpu, True)
 
 # tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -93,33 +96,35 @@ pic_dir = os.path.join(current_dir, 'Figures')
 '''
 load array from npz files
 '''
-def load_part_array (sample_dir_path, unit_num, win_len, stride, part_num):
-    filename =  'Unit%s_win%s_str%s_part%s.npz' %(str(int(unit_num)), win_len, stride, part_num)
-    filepath =  os.path.join(sample_dir_path, filename)
+
+def load_part_array(sample_dir_path, unit_num,
+                    win_len, stride, part_num):
+    filename = 'Unit%s_win%s_str%s_part%s.npz' %(str(int(unit_num)), win_len, stride, part_num)
+    filepath = os.path.join(sample_dir_path, filename)
     loaded = np.load(filepath)
     return loaded['sample'], loaded['label']
 
 
-def load_part_array_merge (sample_dir_path, unit_num, win_len, win_stride, partition):
+def load_part_array_merge(sample_dir_path, unit_num, win_len, win_stride, partition):
     sample_array_lst = []
     label_array_lst = []
-    print ("Unit: ", unit_num)
+    print("Unit: ", unit_num)
     for part in range(partition):
         print ("Part.", part+1)
-        sample_array, label_array = load_part_array (sample_dir_path, unit_num, win_len, win_stride, part+1)
+        sample_array, label_array = load_part_array(sample_dir_path, unit_num, win_len, win_stride, part+1)
         sample_array_lst.append(sample_array)
         label_array_lst.append(label_array)
     sample_array = np.dstack(sample_array_lst)
     label_array = np.concatenate(label_array_lst)
     sample_array = sample_array.transpose(2, 0, 1)
-    print ("sample_array.shape", sample_array.shape)
-    print ("label_array.shape", label_array.shape)
+    print("sample_array.shape", sample_array.shape)
+    print("label_array.shape", label_array.shape)
     return sample_array, label_array
 
 
-def load_array (sample_dir_path, unit_num, win_len, stride, sampling):
-    filename =  'Unit%s_win%s_str%s_smp%s.npz' %(str(int(unit_num)), win_len, stride, sampling)
-    filepath =  os.path.join(sample_dir_path, filename)
+def load_array(sample_dir_path, unit_num, win_len, stride, sampling):
+    filename = 'Unit%s_win%s_str%s_smp%s.npz' %(str(int(unit_num)), win_len, stride, sampling)
+    filepath = os.path.join(sample_dir_path, filename)
     loaded = np.load(filepath)
     return loaded['sample'].transpose(2, 0, 1), loaded['label']
 
@@ -220,7 +225,7 @@ def main():
 
     amsgrad = optimizers.Adam(learning_rate=lr, beta_1=0.9, beta_2=0.999,
                               epsilon=1e-07, amsgrad=True, name='Adam')
-    rmsop = optimizers.RMSprop(learning_rate=lr, rho=0.9, momentum=0.0, 
+    rmsop = optimizers.RMSprop(learning_rate=lr, rho=0.9, momentum=0.0,
                                epsilon=1e-07, centered=False, name='RMSprop')
     train_units_samples_lst =[]
     train_units_labels_lst = []
