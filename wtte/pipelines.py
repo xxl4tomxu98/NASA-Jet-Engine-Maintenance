@@ -158,7 +158,7 @@ def build_data(unit, time, x, look_back, is_test, mask_value=0):
                               np.array((max_unit_time-j, 1), ndmin=2),
                               axis=0)
             xtemp = np.zeros((1, look_back, d))
-            xtemp[:, look_back-min(j, 99)-1:look_back, :] = \
+            xtemp[:, look_back-min(j, look_back-1)-1:look_back, :] = \
                 engine_x[max(0, j-look_back+1):j+1, :]
             this_x = np.concatenate((this_x, xtemp))
         out_x = np.concatenate((out_x, this_x))

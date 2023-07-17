@@ -261,12 +261,16 @@ class Input_Gen(object):
             min_max_scaler.fit_transform(df_train[cols_normalize]),
             columns=cols_normalize,
             index=df_train.index)
-        join_df = df_train[df_train.columns.difference(cols_normalize)].join(norm_df)
+        join_df = df_train[
+            df_train.columns.difference(cols_normalize)
+            ].join(norm_df)
         df_train = join_df.reindex(columns=df_train.columns)
         norm_test_df = pd.DataFrame(
             min_max_scaler.transform(df_test[cols_normalize]),
             columns=cols_normalize, index=df_test.index)
-        test_join_df = df_test[df_test.columns.difference(cols_normalize)].join(norm_test_df)
+        test_join_df = df_test[
+            df_test.columns.difference(cols_normalize)
+            ].join(norm_test_df)
         df_test = test_join_df.reindex(columns=df_test.columns)
         df_test = df_test.reset_index(drop=True)
 

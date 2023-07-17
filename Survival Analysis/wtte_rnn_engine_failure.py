@@ -1,3 +1,5 @@
+from wtte import wtte as wtte  # noqa
+from wtte import pipelines as pipelines
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -6,8 +8,7 @@ from tensorflow.keras.optimizers.legacy import RMSprop
 from sklearn.preprocessing import normalize
 import sys
 sys.path.insert(0, '..')
-from wtte import wtte as wtte  # noqa
-from wtte import pipelines as pipelines
+
 
 def load_file(name):
     with open(name, 'r') as file:
@@ -32,9 +33,11 @@ max_time = 100
 mask_value = -99
 
 train_x, train_y = pipelines.build_data(train[:, 0], train[:, 1],
-                              train[:, 2:26], max_time, False, mask_value)
+                                        train[:, 2:26], max_time,
+                                        False, mask_value)
 test_x = pipelines.build_data(test_x[:, 0], test_x[:, 1],
-                    test_x[:, 2:26], max_time, True, mask_value)[0]
+                              test_x[:, 2:26], max_time,
+                              True, mask_value)[0]
 
 train_u = np.zeros((100, 1), dtype=np.float32)
 train_u += 1
