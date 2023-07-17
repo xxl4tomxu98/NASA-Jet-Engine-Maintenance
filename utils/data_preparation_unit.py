@@ -175,11 +175,9 @@ def gen_labels(id_df, seq_length, label):
     # [200]]
     data_matrix = id_df[label].values
     num_elements = data_matrix.shape[0]
-    # I have to remove the first seq_length labels
-    # because for one id the first sequence of seq_length size have as target
-    # the last label (the previus ones are discarded).
-    # All the next id's sequences will have associated step by step one label
-    # as target.
+    # the first "seq_length" labels will have to be removed because for any
+    # id the first sequence of "seq_length" size have last row label as target
+    # All the next sequences will have associated target labels one step ahead
     return data_matrix[seq_length:num_elements, :]
 
 

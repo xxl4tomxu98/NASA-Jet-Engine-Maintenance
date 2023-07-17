@@ -128,15 +128,14 @@ def build_data(unit, time, x, look_back, is_test, mask_value=0):
          that don't have a full look_back days of observed history (e.g.,
          first observed day for an index combination)
        - an (unit/day, 2) tensor containing time-to-event and action event
-         this case would be all 1 if all unit failed
+         this case would be 1 if unit failed and 0 if censored
        - x: feature subset data frame (object)
-       - look_back: observed history days or cycles (int)
+       - look_back: observed history days or cycles (int) for predictions
        - is_test: whether x is test data (boolean)
        - unit: indexing units of the panel data
        - time: time or cycle series (int of days or int of cycles)
     """
     # y[0] will be days remaining, y[1] will be maint action event,
-    # always 1 for this data
     out_y = np.empty((0, 2), dtype=np.float32)
     # feature number
     d = x.shape[1]
@@ -145,8 +144,8 @@ def build_data(unit, time, x, look_back, is_test, mask_value=0):
     N = np.unique(unit).shape[0]
     for i in range(N):
         # print("Unit: " + str(i))
-        # When did the engine fail? (Last day + 1 for train data,
-        # irrelevant for test.)
+        # Assume Last day + 1 is failing time for train data,
+        # if start counting from 1, irrelevant for test data
         max_unit_time = int(np.max(time[unit == i])) + 1
         if is_test:
             start = max_unit_time - 1
