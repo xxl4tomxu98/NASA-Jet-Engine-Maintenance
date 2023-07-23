@@ -44,7 +44,8 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - DTW and Time series clustering
 - Genetic Algorithm
 - Hidden Markov Models
-- Survival Analysis - gradient boosting survival, random survival forest, survival support vector machines, Cox & Weibull probability
+- Survival Analysis - gradient boosting survival, random survival forest, survival support vector machines, Cox probability harzard
+- Survival Analysis - RNN and Weibull propability distribution deep learning
 - Autoencoder - Anamaly Detection
 - Mulivariant Gaussian Unsupervised Learning
 - Bayesian Structural Time Series (BSTS)
