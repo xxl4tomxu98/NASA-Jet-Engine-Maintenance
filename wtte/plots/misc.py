@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 from wtte import transforms as tr
 
 
-def timeline_plot(padded, title='', cmap="jet",\
-                  plot=False, fig=None, ax=None):
+def timeline_plot(padded, title='', cmap="jet", plot=False, fig=None, ax=None):
     if fig is None or ax is None:
         fig, ax = plt.subplots(ncols=2, sharey=True, figsize=(12, 4))
     ax[0].imshow(padded, interpolation='none',
@@ -20,7 +19,7 @@ def timeline_plot(padded, title='', cmap="jet",\
                  cmap=cmap,
                  origin='lower')
     ax[1].set_ylabel('sequence')
-    ax[1].set_xlabel('absolute time')  #(Assuming sequences end today)
+    ax[1].set_xlabel('absolute time')  # (Assuming sequences end today)
     fig.suptitle(title, fontsize=14)
     if plot:
         # fig.show()

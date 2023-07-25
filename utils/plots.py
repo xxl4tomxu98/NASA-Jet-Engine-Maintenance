@@ -15,7 +15,8 @@ def bar_metrics(resultsDict):
     df.loc["mae"].sort_values().plot(
         kind="bar",
         colormap="Paired",
-        color=[color_dict.get(x, "#333333") for x in df.loc["mae"].sort_values().index],
+        color=[color_dict.get(x, "#333333")
+               for x in df.loc["mae"].sort_values().index],
     )
     plt.legend()
     plt.title("MAE Metric, lower is better")
@@ -24,7 +25,8 @@ def bar_metrics(resultsDict):
         kind="bar",
         colormap="Paired",
         color=[
-            color_dict.get(x, "#333333") for x in df.loc["rmse"].sort_values().index
+            color_dict.get(x, "#333333")
+            for x in df.loc["rmse"].sort_values().index
         ],
     )
     plt.legend()
@@ -34,7 +36,8 @@ def bar_metrics(resultsDict):
         kind="bar",
         colormap="Paired",
         color=[
-            color_dict.get(x, "#333333") for x in df.loc["mape"].sort_values().index
+            color_dict.get(x, "#333333")
+            for x in df.loc["mape"].sort_values().index
         ],
     )
     plt.legend()
