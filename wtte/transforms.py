@@ -26,8 +26,8 @@ def get_padded_seq_lengths(padded):
 
 def df_to_array(df, column_names, nanpad_right=True, return_lists=False,
                 id_col='id', t_col='t'):
-    """Converts flat pandas df with cols `id,t,col1,col2,..`
-       to array indexed `[id,t,col]`.
+    """Converts flat pandas df with cols `id, t, col1, col2, ..`
+       to array indexed `[id, t, col]`.
     :param df: dataframe with columns:
       * `id`: Any type. A unique key for the sequence.
       * `t`: integer. If `t` is a non-contiguous int vec per id then steps in
@@ -41,11 +41,11 @@ def df_to_array(df, column_names, nanpad_right=True, return_lists=False,
     :param t_col: string column name for `t`
     :return padded: With seqlen the max value of `t` per id
       * if nanpad_right & !return_lists:
-        a numpy float array of dimension `[n_seqs,max_seqlen,n_features]`
+        a numpy float array of dimension `[n_seqs, max_seqlen, n_features]`
       * if nanpad_right & return_lists:
-        n_seqs numpy float sub-arrays of dimension `[max_seqlen,n_features]`
+        n_seqs numpy float sub-arrays of dimension `[max_seqlen, n_features]`
       * if !nanpad_right & return_lists:
-        n_seqs numpy float sub-arrays of dimension `[seqlen,n_features]`
+        n_seqs numpy float sub-arrays of dimension `[seqlen, n_features]`
     """
     # Do not sort. Create a view.
     grouped = df.groupby(id_col, sort=False)

@@ -22,7 +22,7 @@ def timeline_plot(padded, title='', cmap="jet", plot=False, fig=None, ax=None):
     ax[1].set_xlabel('absolute time')  # (Assuming sequences end today)
     fig.suptitle(title, fontsize=14)
     if plot:
-        # fig.show()
+        fig.show()
         return None, None
     else:
         return fig, ax
@@ -42,7 +42,7 @@ def timeline_aggregate_plot(padded, title='', cmap="jet", plot=True):
     ax[1, 1].set_title('mean/timestep')
     fig.suptitle(title, fontsize=14)
     if plot:
-        # fig.show()
+        fig.show()
         return None, None
     else:
         return fig, ax
