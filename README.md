@@ -22,11 +22,11 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 
 ## Models for Predictive Maintenance
 
-- Linear, Piecewise-Linear, Exponential Degradation, and ARIMA model for RUL Prediction
+- Linear, Piecewise-Linear, Exponential Degradation, Weibull and ARIMA model for RUL Prediction
 - Pattern similarity based forecasting
 - Similarity-based model for RUL Prediction
 - LSTM model for RUL Prediction and binary and multiclass classification
-- RNN model for binary and multiclass classification
+- RNN(GRU) model for binary and multiclass classification
 - 1D CNN for binary and multiclass classification
 - 1D CNN-RNN for binary and multiclass classification
 - 1D CNN-GRU for binary and multiclass classification
@@ -40,7 +40,7 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - Decision trees classification
 - Ensembles of DT (random forest, xgboost, light gradient boosting machines) classifiers and regressors
 - Autokeras failure prediction
-- Tsfresh, sktime, scikit-time, scikit-survival, py-survival
+- Tsfresh, sktime, aeon, scikit-survival, py-survival
 - DTW and Time series clustering
 - Genetic Algorithm
 - Hidden Markov Models
