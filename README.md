@@ -6,8 +6,9 @@ The objective of this project is to implement various Predictive Maintenance met
 
 1. Classification: Predicting the failure of machine in upcoming n days
 2. Regression: Predicting the remaining useful life of a machine (RUL)
-3. Anomaly Detection: Unsupervised learning
-4. Survival analysis: Stoistic modeling of probability hazards or survivals
+3. Feature Selection: Explaining the causes of abnormal behavior 
+4. Anomaly Detection: Unsupervised learning
+5. Survival Analysis: Stoistic modeling of probability hazards or survivals
 
 ## Data
 Data sets consists of multiple multivariate time series. Each time series is from a different engine – i.e., the data can be considered to be from a fleet of engines of the same type. You can find the data [here](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps).
