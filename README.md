@@ -20,6 +20,9 @@ Imbalanced class distribution is a common issue in many classification tasks. It
 The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-sampling technique" [[5]](#5). It is used to increase the size of the minority examples in a data set by synthesizing new examples with minority class. SMOTE module has two parameters: "SMOTE percentage" and "Number of nearest neighbors". The parameter "SMOTE percentage" should be in multiples of hundreds (100,200,300,400,…). This is fraction of new minority examples that gets added. For examples, we double our minority class by setting the value to 100, we triple the size of minority class by setting the value to 200, etc. The parameter "Number of nearest neighbors" is used to generate new examples from minority class. Each generated example is an average of the original example and its nearest neighbors from the same class.
 
 ## EDA
+- Time based feature engineering: mean, max, min, standard deviation, etc.
+- Frequency based feature engineering: absolute, relative and cumulative frequency; skewness and peakedness.
+- Combined time and frequency based: bilinear time-frequency distributions; spectral-entropy
 
 ## Models for Predictive Maintenance
 
