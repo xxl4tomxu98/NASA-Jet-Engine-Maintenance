@@ -27,6 +27,7 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 ## Models for Predictive Maintenance
 
 - Linear, Piecewise-Linear, Exponential Degradation, Weibull and ARIMA model for RUL Prediction
+- Time series forecasting plus anomaly detection
 - Pattern similarity based forecasting
 - Similarity-based model for RUL Prediction
 - LSTM model for RUL Prediction and binary and multiclass classification
