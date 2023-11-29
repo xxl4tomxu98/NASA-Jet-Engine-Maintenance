@@ -53,6 +53,7 @@ The SMOTE module is created based on algorithm "SMOTE: synthetic minority over-s
 - Survival Analysis - RNN and Weibull propability distribution deep learning
 - Autoencoder - Anamaly Detection
 - Mulivariant Gaussian Unsupervised Learning
+- Principal Component Analysis for anamaly detection
 - Bayesian Structural Time Series (BSTS)
 
 # N-CMAPSS_DL
@@ -127,4 +128,3 @@ https://www.mathworks.com/help/predmaint/ug/rul-estimation-using-rul-estimator-m
 
 <a id="5">[5]</a>
 N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer (2002). SMOTE: synthetic minority over-sampling technique. Journal of artificial intelligence research, 16(1), 321-357.
-
